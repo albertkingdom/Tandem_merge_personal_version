@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import '../../css/shop.scss'
 import { AiOutlineSearch } from 'react-icons/ai' //search_icon
 
 function Filterbar(props) {
   const [search_query, setSearch_query] = useState('')
+  const inputRef = useRef()
   async function Search() {
     const request = new Request(
       'http://localhost:6001/product/?search=' + search_query,
@@ -20,8 +21,17 @@ function Filterbar(props) {
     props.setTotalpage(data.totalPages)
   }
   useEffect(() => {
-    Search()
-  }, [search_query])
+    const timer = setTimeout(()=>{
+      //如果和500ms前的Input內容一樣，表示使用者沒有再繼續打字，就送出request
+      if(search_query === inputRef.current.value){
+        Search()
+      }
+    },500);
+    return ()=>{
+      clearTimeout(timer)
+    }
+    
+  }, [search_query,inputRef])
   const handleSearch = value => {
     setSearch_query(value)
   }
@@ -30,6 +40,7 @@ function Filterbar(props) {
       <div className="row d-flex justify-content-center my-2">
         <div className="col col-sm-6 col-lg-2 s-filterbar">
           <input
+            ref={inputRef}
             type="search"
             className="form-control s-filterbar-search pl-4"
             aria-label="Text input with dropdown button"
