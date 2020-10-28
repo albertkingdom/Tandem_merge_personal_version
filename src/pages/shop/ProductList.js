@@ -18,6 +18,7 @@ import '../../css/shop.scss'
 import Swal from 'sweetalert2'
 import addToLike from './addToLike'
 import unazen from './unazen'
+import Pagination from '../../components/shop/Pagination'
 
 function ProductList(props) {
   const [mycart, setMycart] = useState([])
@@ -61,7 +62,7 @@ function ProductList(props) {
       window.location.reload()
     })
   }
-  console.log('currentpage=', currentpage)
+  // console.log('currentpage=', currentpage)
   //fetch database product撈所有資料(不分類)
   async function getDataFromServer(page) {
     const request = new Request('http://localhost:6001/product/list/' + page, {
@@ -128,12 +129,63 @@ function ProductList(props) {
     // console.log(data.rows)
   }
 
-  console.log(myproduct)
+  // console.log(myproduct)
   //一開始就會載入資料,記得設定cors
   //當換頁時setcurrentpage到新的值就會觸發getDataFromServer
   useEffect(() => {
+    //fetch database product撈所有資料(有分類)
+    async function getClassifiedDataFromServer(page) {
+      // 利用內建的API來得到URLSearchParams物件
+      // const searchParams = new URLSearchParams(props.location.search)
+      let request = undefined
+      // if (searchParams.get('type') && type !== 0) {
+      //   request = new Request(
+      //     'http://localhost:3300/product/search/' + type + '/' + currentpage,
+      //     {
+      //       method: 'GET',
+      //       credentials: 'include',
+      //     }
+      //   )
+      // } else {
+      //   request = new Request('http://localhost:3300/product/list/' + page, {
+      //     method: 'GET',
+      //     credentials: 'include',
+      //   })
+      // }
+      //新分業方法
+      if (type !== 0 || vendor !== 'V000' || price !== '') {
+        request = new Request(
+          'http://localhost:6001/product/search/' +
+            type +
+            '/' +
+            vendor +
+            '/' +
+            price +
+            '/' +
+            orderBy +
+            '/' +
+            currentpage,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        )
+      } else {
+        request = new Request('http://localhost:6001/product/list/' + page, {
+          method: 'GET',
+          credentials: 'include',
+        })
+      }
+      const response = await fetch(request)
+      const data = await response.json()
+
+      setMyproduct(data.rows)
+      setTotalpage(data.totalPages)
+
+      // console.log(data.rows)
+    }
     getClassifiedDataFromServer(currentpage)
-  }, [currentpage, vendor, price, orderBy])
+  }, [currentpage, vendor, price, orderBy, type])
 
   //每次mycart資料有變動就會3秒後關掉載入指示
   useEffect(() => {
@@ -141,35 +193,28 @@ function ProductList(props) {
       setDataLoading(false)
     }, 500)
   }, [mycart])
-  //分類type有變動就會觸發
-  useEffect(() => {
-    getClassifiedDataFromServer(currentpage)
-  }, [type])
 
   //創造頁數list
-  let pageNumbers = []
-  for (let i = 1; i <= totalpage; i++) {
-    pageNumbers.push(i)
-  }
+  // let pageNumbers = []
+  // for (let i = 1; i <= totalpage; i++) {
+  //   pageNumbers.push(i)
+  // }
   //換頁function
   const paginate = value => {
     setCurrentpage(value)
   }
   //切換Type
-  // const handletype = value => {
-  //   setType(value)
-  //   setCurrentpage(1)
-  // }
   function handletype(value) {
     setType(value)
     setCurrentpage(1)
   }
-  console.log('type=', type)
+  // console.log('type=', type)
   // 利用內建的API來得到URLSearchParams物件
   // const searchParams = new URLSearchParams(props.location.search)
-  console.log(props)
-  let search = props.location.search
-  console.log('search= ', search)
+  // console.log(props)
+  // let search = props.location.search
+  // console.log('search= ', search)
+
   //顯示排序方式
   let orderbydisplay
   switch (orderBy) {
@@ -435,58 +480,11 @@ function ProductList(props) {
         })}
       </div>
 
-      {/* {myproduct.length}
-      {totalpage} */}
-      <div className="row my-3">
-        <div className="col-12 d-flex">
-          {/* 新的頁數bar開始 */}
-          <ul className="d-flex flex-wrap">
-            <li className="s-pageItem">
-              <Link className="" onClick={() => paginate(currentpage - 1)}>
-                <AiOutlineCaretLeft />
-              </Link>
-            </li>
-            {pageNumbers.map((number, index) => {
-              const data = {
-                type,
-                page: number,
-              }
-              return (
-                <li
-                  key={index}
-                  className={
-                    's-pageItem ' +
-                    (number === currentpage ? 's-pageItem-Active' : '')
-                  }
-                >
-                  <Link
-                    className=""
-                    //   to={{
-                    //     search: searchParams.get('page')
-                    //       ? `page=${number}`
-                    //       : search + `page=${number}`,
-                    //   }}
-                    // to={{ search: `type=${type}` + `&&page=${number}` }}
-                    //頁數資訊可以不要顯示在url
-                    // onClick={() => {paginate(number);setType(type)}}
-                    onClick={() => {
-                      setCurrentpage(number)
-                    }}
-                  >
-                    {number}
-                  </Link>
-                </li>
-              )
-            })}
-            <li className="s-pageItem">
-              <Link className="" onClick={() => paginate(currentpage + 1)}>
-                <AiOutlineCaretRight />
-              </Link>
-            </li>
-          </ul>
-          {/* 新的頁數bar結束 */}
-        </div>
-      </div>
+      <Pagination
+        totalpage={totalpage}
+        currentpage={currentpage}
+        paginate={paginate}
+      />
     </>
   )
   //每次total資料有變動就會500ms後關掉載入提示
