@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react'
 import { Link, NavLink, withRouter } from 'react-router-dom'
 import Slider from '../../components/shop/Slider'
 import Filterbar from '../../components/shop/Filterbar'
-import Product from './Product'
+
 // import '../../css/styles.scss'
 import {
   AiOutlineHeart,
   AiOutlineShoppingCart,
-  AiOutlineArrowLeft,
-  AiOutlineArrowRight,
-  AiOutlineCaretLeft,
-  AiOutlineCaretRight,
-  AiOutlineCloseCircle,
   AiFillHeart,
 } from 'react-icons/ai'
 import '../../css/shop.scss'
 import Swal from 'sweetalert2'
-import addToLike from './addToLike'
-import unazen from './unazen'
+
+import {
+  updateAzenToLocalStorage,
+  addAzenToDatabase,
+  cancelAzenToDatabase,
+} from '../../components/shop/Functions/Function'
 import Pagination from '../../components/shop/Pagination'
+import FilterDisplay from '../../components/shop/FilterDisplay'
 
 function ProductList(props) {
   const [mycart, setMycart] = useState([])
@@ -34,23 +34,17 @@ function ProductList(props) {
   const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
 
   const searchParams = new URLSearchParams(props.location.search)
-  //如果url有type的話就抓下來
-  // if(searchParams.get('type')){
-  //   let typeURL = searchParams.get('type')
-  //   console.log('typeURL',typeURL)
-  //   setType(typeURL)
-  // }
-  //   const [search_query, setSearch_query] = useState('456')
+
   //  加入購物車
   async function updateCartToLocalStorage(value) {
-    setDataLoading(true)
+    // setDataLoading(true)
     // Swal.fire({ html: `商品名稱:${value.name}加入購物車` })
     const currentCart = JSON.parse(localStorage.getItem('cart')) || []
     let arr = []
     currentCart.forEach(element => {
-      arr.push(element.id == value.id)
+      arr.push(element.id === value.id)
     })
-    if (arr.indexOf(true) == -1) {
+    if (arr.indexOf(true) === -1) {
       const newCart = [...currentCart, value]
       localStorage.setItem('cart', JSON.stringify(newCart))
       setMycart(newCart)
@@ -59,100 +53,16 @@ function ProductList(props) {
       html: `商品名稱:${value.name}成功加入購物車`,
       timer: 1500,
     }).then(r => {
-      window.location.reload()
+      // window.location.reload()
     })
   }
-  // console.log('currentpage=', currentpage)
-  //fetch database product撈所有資料(不分類)
-  async function getDataFromServer(page) {
-    const request = new Request('http://localhost:6001/product/list/' + page, {
-      method: 'GET',
-      credentials: 'include',
-    })
-    const response = await fetch(request)
-    const data = await response.json()
 
-    setMyproduct(data.rows)
-    setTotalpage(data.totalPages)
-
-    // console.log(data.rows)
-  }
-  //fetch database product撈所有資料(有分類)
-  async function getClassifiedDataFromServer(page) {
-    // 利用內建的API來得到URLSearchParams物件
-    const searchParams = new URLSearchParams(props.location.search)
-    let request = undefined
-    // if (searchParams.get('type') && type !== 0) {
-    //   request = new Request(
-    //     'http://localhost:3300/product/search/' + type + '/' + currentpage,
-    //     {
-    //       method: 'GET',
-    //       credentials: 'include',
-    //     }
-    //   )
-    // } else {
-    //   request = new Request('http://localhost:3300/product/list/' + page, {
-    //     method: 'GET',
-    //     credentials: 'include',
-    //   })
-    // }
-    //新分業方法
-    if (type !== 0 || vendor !== 'V000' || price !== '') {
-      request = new Request(
-        'http://localhost:6001/product/search/' +
-          type +
-          '/' +
-          vendor +
-          '/' +
-          price +
-          '/' +
-          orderBy +
-          '/' +
-          currentpage,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      )
-    } else {
-      request = new Request('http://localhost:6001/product/list/' + page, {
-        method: 'GET',
-        credentials: 'include',
-      })
-    }
-    const response = await fetch(request)
-    const data = await response.json()
-
-    setMyproduct(data.rows)
-    setTotalpage(data.totalPages)
-
-    // console.log(data.rows)
-  }
-
-  // console.log(myproduct)
-  //一開始就會載入資料,記得設定cors
-  //當換頁時setcurrentpage到新的值就會觸發getDataFromServer
   useEffect(() => {
     //fetch database product撈所有資料(有分類)
     async function getClassifiedDataFromServer(page) {
-      // 利用內建的API來得到URLSearchParams物件
-      // const searchParams = new URLSearchParams(props.location.search)
       let request = undefined
-      // if (searchParams.get('type') && type !== 0) {
-      //   request = new Request(
-      //     'http://localhost:3300/product/search/' + type + '/' + currentpage,
-      //     {
-      //       method: 'GET',
-      //       credentials: 'include',
-      //     }
-      //   )
-      // } else {
-      //   request = new Request('http://localhost:3300/product/list/' + page, {
-      //     method: 'GET',
-      //     credentials: 'include',
-      //   })
-      // }
-      //新分業方法
+
+      //新分頁方法
       if (type !== 0 || vendor !== 'V000' || price !== '') {
         request = new Request(
           'http://localhost:6001/product/search/' +
@@ -188,17 +98,12 @@ function ProductList(props) {
   }, [currentpage, vendor, price, orderBy, type])
 
   //每次mycart資料有變動就會3秒後關掉載入指示
-  useEffect(() => {
-    setTimeout(() => {
-      setDataLoading(false)
-    }, 500)
-  }, [mycart])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setDataLoading(false)
+  //   }, 500)
+  // }, [mycart])
 
-  //創造頁數list
-  // let pageNumbers = []
-  // for (let i = 1; i <= totalpage; i++) {
-  //   pageNumbers.push(i)
-  // }
   //換頁function
   const paginate = value => {
     setCurrentpage(value)
@@ -215,148 +120,41 @@ function ProductList(props) {
   // let search = props.location.search
   // console.log('search= ', search)
 
-  //顯示排序方式
-  let orderbydisplay
-  switch (orderBy) {
-    case 'itemName ASC':
-      orderbydisplay = '遊戲名稱'
-      break
-    case 'itemPrice DESC':
-      orderbydisplay = '價錢高至低'
-      break
-    case 'itemPrice ASC':
-      orderbydisplay = '價錢低至高'
-      break
-    case 'itemDate ASC':
-      orderbydisplay = '推出時間最早'
-      break
-    case 'itemDate DESC':
-      orderbydisplay = '推出時間最新'
-      break
-
-    default:
-  }
-  //顯示發行商
-  let vendordisplay
-  switch (vendor) {
-    case 'V001':
-      vendordisplay = '美國藝電（ElectronicArts）'
-      break
-    case 'V002':
-      vendordisplay = '動視暴雪（Activision Blizzard）'
-      break
-    case 'V003':
-      vendordisplay = '2K Games'
-      break
-    case 'V004':
-      vendordisplay = '任天堂（NINTENDO）'
-      break
-    case 'V005':
-      vendordisplay = '索尼（SONY）'
-      break
-    case 'V006':
-      vendordisplay = '育碧（Ubisoft）'
-      break
-    case 'V007':
-      vendordisplay = '柯樂美（KONAMI）'
-      break
-    case 'V008':
-      vendordisplay = '卡普空（CAPCOM）'
-      break
-    case 'V009':
-      vendordisplay = '史克威爾艾尼克斯（SQUARE ENIX）'
-      break
-    case 'V010':
-      vendordisplay = '世嘉（SEGA）'
-      break
-    default:
-  }
-  //顯示價格區間
-  let pricedisplay
-  switch (price) {
-    case '<100':
-      pricedisplay = '< NT$100'
-      break
-    case '<500':
-      pricedisplay = '< NT$500'
-      break
-    case '<1000':
-      pricedisplay = '< NT$1000'
-      break
-
-    default:
-  }
-  //顯示遊戲類型
-  let typedisplay
-  switch (type) {
-    case 5:
-      typedisplay = '運動'
-      break
-    case 1:
-      typedisplay = '休閒'
-      break
-    case 3:
-      typedisplay = '血腥'
-      break
-    case 4:
-      typedisplay = '冒險'
-      break
-    case 2:
-      typedisplay = '動作'
-      break
-    case 6:
-      typedisplay = '競速'
-      break
-
-    default:
-  }
-  //處理按讚顯示，點按讚愛心變色，但重新整理會失效，除非更新LOCALSTORAGE的登入資訊
-  function azen(ID) {
-    // let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData')).mbAzen
-    // mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-    // let mbAzen_arr = mbAzen_str.split(',')
-    const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-    let newMbAzen_arr = [...currentLocalAzen]
-    if (newMbAzen_arr.indexOf(`${ID}`) !== -1) {
-      let remove_arr = newMbAzen_arr.filter(id => id !== `${ID}`)
-      setMbAzen_arr_state(remove_arr)
-      localStorage.setItem('Azen', JSON.stringify(remove_arr))
-    } else {
-      newMbAzen_arr.push(`${ID}`)
-      setMbAzen_arr_state(newMbAzen_arr)
-      localStorage.setItem('Azen', JSON.stringify(newMbAzen_arr))
-    }
-    // console.log('mbAzen_arr', mbAzen_arr)
-  }
-
-  //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
-      if (localStorage.getItem('Azen') == null) {
-        let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-          .mbAzen
-        mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-        let mbAzen_arr = mbAzen_str.split(',')
-        // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-        localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-        setMbAzen_arr_state(mbAzen_arr)
+    //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
+    const CopyAzenListToLocal = () => {
+      if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
+        if (localStorage.getItem('Azen') == null) {
+          let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
+            .mbAzen
+          mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
+          let mbAzen_arr = mbAzen_str.split(',')
+          // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
+          localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
+          setMbAzen_arr_state(mbAzen_arr)
+        } else {
+          const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
+          setMbAzen_arr_state(currentLocalAzen)
+        }
       } else {
-        const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-        setMbAzen_arr_state(currentLocalAzen)
+        localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
       }
-    } else {
-      localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
     }
+    CopyAzenListToLocal()
   }, [])
-  const loading = (
-    <>
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
+
+  if (dataLoading) {
+    return (
+      <>
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
         </div>
-      </div>
-    </>
-  )
+      </>
+    )
+  }
+
   const display = (
     <>
       <div className="row row-cols-3">
@@ -374,7 +172,7 @@ function ProductList(props) {
                     alt="..."
                   />
                   <div className="card-body">
-                    <Link to={{ pathname: `/product/${value.itemId}` }}>
+                    <Link to={`/product/${value.itemId}`}>
                       <h5 className="cart-title" style={{ color: 'black' }}>
                         {value.itemName}
                       </h5>
@@ -413,8 +211,13 @@ function ProductList(props) {
                                 localStorage.getItem('LoginUserData')
                               ) !== null
                             ) {
-                              azen(value.itemId)
-                              unazen({
+                              updateAzenToLocalStorage(value.itemId)
+                              setMbAzen_arr_state(prevazenlist =>
+                                prevazenlist.filter(
+                                  id => id !== `${value.itemId}`
+                                )
+                              )
+                              cancelAzenToDatabase({
                                 userId: JSON.parse(
                                   localStorage.getItem('LoginUserData')
                                 ).mbId,
@@ -438,13 +241,17 @@ function ProductList(props) {
                                 localStorage.getItem('LoginUserData')
                               ) !== null
                             ) {
-                              addToLike({
+                              addAzenToDatabase({
                                 userId: JSON.parse(
                                   localStorage.getItem('LoginUserData')
                                 ).mbId,
                                 likeproductId: value.itemId,
                               })
-                              azen(value.itemId)
+                              updateAzenToLocalStorage(value.itemId)
+                              setMbAzen_arr_state(prevazenlist => [
+                                ...prevazenlist,
+                                `${value.itemId}`,
+                              ])
                             } else {
                               Swal.fire('請先登入')
                             }
@@ -457,22 +264,6 @@ function ProductList(props) {
                       )}
                     </div>
                   </div>
-                  {/* <div className="card-footer">
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() =>
-                      updateCartToLocalStorage({
-                        id: value.itemId,
-                        name: value.itemName,
-                        amount: 1,
-                        price: value.itemPrice,
-                      })
-                    }
-                  >
-                    加入購物車
-                  </button>
-                </div> */}
                 </div>
               </div>
             </div>
@@ -490,75 +281,19 @@ function ProductList(props) {
   //每次total資料有變動就會500ms後關掉載入提示
   return (
     <>
-      {/* <Link
-        className="btn btn-primary"
-        // to={{ search: search + `&&type=1` }}
-        to={{ search: `type=1` }}
-        onClick={() => {
-          handletype(1)
-        }}
-      >
-        類別1
-      </Link>
-      <Link
-        className="btn btn-primary"
-        // to={{ search: search + `&&type=1` }}
-        to={{ search: `type=2` }}
-        onClick={() => {
-          handletype(2)
-        }}
-      >
-        類別2
-      </Link>
-      <h3>產品類型 = {searchParams.get('type')}</h3> */}
-      <Slider
-        handletype={function(value) {
-          handletype(value)
-        }}
-      />
-      <div className="d-flex container">
-        {type !== 0 ? (
-          <div className="s-filterClearBtn">
-            類型: {typedisplay}
-            <button onClick={() => setType(0)}>
-              <AiOutlineCloseCircle />
-            </button>
-          </div>
-        ) : (
-          ''
-        )}
-        {vendor !== 'V000' ? (
-          <div className="s-filterClearBtn">
-            發行商:{vendordisplay}
-            <button onClick={() => setVendor('V000')}>
-              <AiOutlineCloseCircle />
-            </button>
-          </div>
-        ) : (
-          ''
-        )}
-        {price !== 9999 ? (
-          <div className="s-filterClearBtn">
-            價格:{pricedisplay}
-            <button onClick={() => setPrice(9999)}>
-              <AiOutlineCloseCircle />
-            </button>
-          </div>
-        ) : (
-          ''
-        )}
-        {orderBy !== 'itemId' ? (
-          <div className="s-filterClearBtn">
-            排序:{orderbydisplay}
-            <button onClick={() => setOrderBy('itemId')}>
-              <AiOutlineCloseCircle />
-            </button>
-          </div>
-        ) : (
-          ''
-        )}
-      </div>
+      <Slider handletype={handletype} />
+
       <div className="container">
+        <FilterDisplay
+          type={type}
+          vendor={vendor}
+          price={price}
+          orderBy={orderBy}
+          setType={setType}
+          setVendor={setVendor}
+          setPrice={setPrice}
+          setOrderBy={setOrderBy}
+        />
         <Filterbar
           setMyproduct={setMyproduct}
           setTotalpage={setTotalpage}
@@ -566,8 +301,8 @@ function ProductList(props) {
           setPrice={setPrice}
           setOrderBy={setOrderBy}
         />
+        {display}
       </div>
-      <div className="container">{dataLoading ? loading : display}</div>
     </>
   )
 }

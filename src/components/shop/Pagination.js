@@ -10,9 +10,9 @@ function Pagination({ totalpage, paginate, currentpage }) {
   return (
     <>
       <div className="row my-3">
-        <div className="col-12 d-flex">
+        <div className="col-12">
           {/* 新的頁數bar開始 */}
-          <ul className="d-flex flex-wrap">
+          <ul className="d-flex flex-wrap justify-content-center">
             <li className="s-pageItem">
               <Link className="" onClick={() => paginate(currentpage - 1)}>
                 <AiOutlineCaretLeft />

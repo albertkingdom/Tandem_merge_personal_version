@@ -3,38 +3,42 @@ import { Link } from 'react-router-dom'
 import '../../css/shop.scss'
 import { AiOutlineSearch } from 'react-icons/ai' //search_icon
 
-function Filterbar(props) {
+function Filterbar({
+  setMyproduct,
+  setTotalpage,
+  setVendor,
+  setOrderBy,
+  setPrice,
+}) {
   const [search_query, setSearch_query] = useState('')
   const inputRef = useRef()
-  async function Search() {
-    const request = new Request(
-      'http://localhost:6001/product/?search=' + search_query,
-      {
-        method: 'GET',
-        credentials: 'include',
-      }
-    )
-    const response = await fetch(request)
-    const data = await response.json()
 
-    props.setMyproduct(data.rows)
-    props.setTotalpage(data.totalPages)
-  }
   useEffect(() => {
-    const timer = setTimeout(()=>{
+    const timer = setTimeout(() => {
       //如果和500ms前的Input內容一樣，表示使用者沒有再繼續打字，就送出request
-      if(search_query === inputRef.current.value){
+      if (search_query === inputRef.current.value) {
+        async function Search() {
+          const request = new Request(
+            'http://localhost:6001/product/?search=' + search_query,
+            {
+              method: 'GET',
+              credentials: 'include',
+            }
+          )
+          const response = await fetch(request)
+          const data = await response.json()
+
+          setMyproduct(data.rows)
+          setTotalpage(data.totalPages)
+        }
         Search()
       }
-    },500);
-    return ()=>{
+    }, 500)
+    return () => {
       clearTimeout(timer)
     }
-    
-  }, [search_query,inputRef])
-  const handleSearch = value => {
-    setSearch_query(value)
-  }
+  }, [search_query, inputRef])
+
   return (
     <>
       <div className="row d-flex justify-content-center my-2">
@@ -50,10 +54,8 @@ function Filterbar(props) {
           />
           <Link
             className="s-searchicon"
-            to={'/productlist/?search=' + `${search_query}`}
-            // onClick={() => props.handleSearch()}
+            to={`/productlist/?search=${search_query}`}
           >
-            {/* <i class="fas fa-search"></i> */}
             <AiOutlineSearch style={{ fontSize: '24px', marginTop: '10px' }} />
           </Link>
         </div>
@@ -72,7 +74,7 @@ function Filterbar(props) {
               className="dropdown-item"
               to="#"
               onClick={() => {
-                props.setPrice('<100')
+                setPrice('<100')
               }}
             >
               Under NT$100
@@ -81,7 +83,7 @@ function Filterbar(props) {
               className="dropdown-item"
               to="#"
               onClick={() => {
-                props.setPrice('<500')
+                setPrice('<500')
               }}
             >
               Under NT$500
@@ -90,7 +92,7 @@ function Filterbar(props) {
               className="dropdown-item"
               to="#"
               onClick={() => {
-                props.setPrice('<1000')
+                setPrice('<1000')
               }}
             >
               Under NT$1000
@@ -111,70 +113,70 @@ function Filterbar(props) {
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V001')}
+              onClick={() => setVendor('V001')}
             >
               美國藝電（ElectronicArts）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V002')}
+              onClick={() => setVendor('V002')}
             >
               動視暴雪（Activision Blizzard）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V003')}
+              onClick={() => setVendor('V003')}
             >
               2K Games
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V004')}
+              onClick={() => setVendor('V004')}
             >
               任天堂（NINTENDO）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V005')}
+              onClick={() => setVendor('V005')}
             >
               索尼（SONY）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V006')}
+              onClick={() => setVendor('V006')}
             >
               育碧（Ubisoft）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V007')}
+              onClick={() => setVendor('V007')}
             >
               柯樂美（KONAMI）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V008')}
+              onClick={() => setVendor('V008')}
             >
               卡普空（CAPCOM）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V009')}
+              onClick={() => setVendor('V009')}
             >
               史克威爾艾尼克斯（SQUARE ENIX）
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setVendor('V010')}
+              onClick={() => setVendor('V010')}
             >
               世嘉（SEGA）
             </Link>
@@ -195,35 +197,35 @@ function Filterbar(props) {
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setOrderBy('itemName ASC')}
+              onClick={() => setOrderBy('itemName ASC')}
             >
               遊戲名稱
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setOrderBy('itemPrice DESC')}
+              onClick={() => setOrderBy('itemPrice DESC')}
             >
               價錢高至低
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setOrderBy('itemPrice ASC')}
+              onClick={() => setOrderBy('itemPrice ASC')}
             >
               價錢低至高
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setOrderBy('itemDate ASC')}
+              onClick={() => setOrderBy('itemDate ASC')}
             >
               推出時間最早
             </Link>
             <Link
               className="dropdown-item"
               to="#"
-              onClick={() => props.setOrderBy('itemDate DESC')}
+              onClick={() => setOrderBy('itemDate DESC')}
             >
               推出時間最新
             </Link>
