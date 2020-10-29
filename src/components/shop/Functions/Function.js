@@ -59,3 +59,25 @@ export async function cancelAzenToDatabase(value) {
     Swal.fire('商品成功移出收藏!')
   }
 }
+
+//  加入購物車
+export async function updateCartToLocalStorage(value) {
+  // setDataLoading(true)
+  // Swal.fire({ html: `商品名稱:${value.name}加入購物車` })
+  const currentCart = JSON.parse(localStorage.getItem('cart')) || []
+  let arr = []
+  currentCart.forEach(element => {
+    arr.push(element.id === value.id)
+  })
+  if (arr.indexOf(true) === -1) {
+    const newCart = [...currentCart, value]
+    localStorage.setItem('cart', JSON.stringify(newCart))
+    // setMycart(newCart)
+  }
+  Swal.fire({
+    html: `商品名稱:${value.name}成功加入購物車`,
+    timer: 1500,
+  }).then(r => {
+    // window.location.reload()
+  })
+}

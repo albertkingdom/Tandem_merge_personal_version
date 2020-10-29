@@ -617,3 +617,15 @@ button:focus {
   border: 0px;
   margin-top: 20px;
 }
+
+button.section-select{
+  border:none;
+  font-size: 20px;
+  background-color: #fff;
+  color:#79cee2;
+  margin: 10px;
+  &.active{
+    border-bottom: 2px solid #79cee2;
+
+  }
+}

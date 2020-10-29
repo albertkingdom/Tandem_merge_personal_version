@@ -16,6 +16,7 @@ import {
   updateAzenToLocalStorage,
   addAzenToDatabase,
   cancelAzenToDatabase,
+  updateCartToLocalStorage,
 } from '../../components/shop/Functions/Function'
 import Pagination from '../../components/shop/Pagination'
 import FilterDisplay from '../../components/shop/FilterDisplay'
@@ -34,28 +35,6 @@ function ProductList(props) {
   const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
 
   const searchParams = new URLSearchParams(props.location.search)
-
-  //  加入購物車
-  async function updateCartToLocalStorage(value) {
-    // setDataLoading(true)
-    // Swal.fire({ html: `商品名稱:${value.name}加入購物車` })
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || []
-    let arr = []
-    currentCart.forEach(element => {
-      arr.push(element.id === value.id)
-    })
-    if (arr.indexOf(true) === -1) {
-      const newCart = [...currentCart, value]
-      localStorage.setItem('cart', JSON.stringify(newCart))
-      setMycart(newCart)
-    }
-    Swal.fire({
-      html: `商品名稱:${value.name}成功加入購物車`,
-      timer: 1500,
-    }).then(r => {
-      // window.location.reload()
-    })
-  }
 
   useEffect(() => {
     //fetch database product撈所有資料(有分類)
