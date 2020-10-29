@@ -19,7 +19,7 @@ const user = (state = { isAuth: false }, action) => {
 const Sleavecomment = (state = { messageIsLeft: false }, action) => {
   switch (action.type) {
     case 'LEAVE_MESSAGE':
-      return { ...action.data, messageIsLeft: true }
+      return { messageIsLeft: true }
     default:
       return state
   }

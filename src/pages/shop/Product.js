@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { withRouter, NavLink, Switch, Route, Link } from 'react-router-dom'
 import Config from './Config'
 
-import Comment2 from './Comment2'
+import CommentList from './CommentList'
 import Recommend from './Recommend'
 import {
   AiOutlineHeart,
@@ -108,7 +108,7 @@ function Product(props) {
     for (let i = 0; i <= 3; i++) {
       bigImgarray.push(`/images/shop/bigImage/` + newname[0] + '_' + i + `.jpg`)
     }
-    console.log(bigImgarray)
+
     setLightBoxImgArray(bigImgarray)
   }, [myproduct])
 
@@ -318,7 +318,11 @@ function Product(props) {
         </li>
       </ul>
       <div className="">
-        {configORcomment === 1 ? <Config /> : <Comment2 props={myproduct} />}
+        {configORcomment === 1 ? (
+          <Config />
+        ) : (
+          <CommentList props={myproduct} productId={productId} />
+        )}
       </div>
       <div className="container">
         <Recommend />
