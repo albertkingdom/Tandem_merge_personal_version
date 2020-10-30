@@ -34,7 +34,7 @@ import ActivityAddNew from './pages/activity/ActivityAddNew'
 //css
 import '../src/css/activity.css'
 import Mbcenterindex from './pages/member/Mbcenterindex'
-import Cart from './pages/shop/Cart'
+
 //---------------------------------------------------------------//
 //                         shop pages                            //
 import ProductList from './pages/shop/ProductList'

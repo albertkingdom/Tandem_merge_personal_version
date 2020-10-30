@@ -168,24 +168,34 @@ h6 {
 }
 .s-coupon-used {
   background-color: gray;
-  position: relative;
-  top: -160px;
+  position: absolute;
+ 
+  top:0;
   left: 0;
   width: 240px;
-  max-height: 160px;
+
+  height: 100%;
   opacity: 0.5;
   font-size: 36px;
   text-align: center;
   color: white;
-  line-height: 160px;
-  // z-index: -1;
-  visibility: hidden;
+  line-height: 100%;
+ 
+  display: none;
+  p{
+        top:50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%,-50%);
+    font-size: 28px;
+  }
 }
 .s-coupon-used-show {
   @extend .s-coupon-used;
-  max-height: 160px;
+  // max-height: 160px;
   // z-index: 99;
-  visibility: visible;
+  // visibility: visible;
+  display: block;
 }
 .post {
   /* width: 70%; */

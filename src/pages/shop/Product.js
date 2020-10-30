@@ -115,17 +115,24 @@ function Product(props) {
   useEffect(() => {
     //儲存瀏覽歷程記錄至localstorage
     function addToHistory() {
-      const currentHistory =
+      let currentHistory =
         JSON.parse(localStorage.getItem('browse-history')) || []
+      // console.log('product id', typeof +productId)
 
       //沒有在history裡就加入
-      if (currentHistory.indexOf(`${productId}`) === -1) {
-        const newHistory = [...currentHistory, productId]
-        localStorage.setItem('browse-history', JSON.stringify(newHistory))
+      if (
+        currentHistory.filter(item => item.itemId === +productId).length === 0
+      ) {
+        // const newHistory = [...currentHistory, myproduct]
+        currentHistory.push(myproduct)
+
+        localStorage.setItem('browse-history', JSON.stringify(currentHistory))
       }
     }
-    addToHistory()
-  }, [productId])
+    if (myproduct.length !== 0) {
+      addToHistory()
+    }
+  }, [productId, myproduct])
 
   return (
     <>
