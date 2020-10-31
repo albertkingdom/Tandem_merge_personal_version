@@ -1,29 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { withRouter, Link } from 'react-router-dom'
-import { Button } from 'react-bootstrap'
 import '../../css/shop.scss'
 import Swal from 'sweetalert2' //sweetalert2
-import $ from 'jquery'
 import { Form } from 'react-bootstrap'
 import PayProgressbar from '../../components/shop/PayProgessbar'
+import CreditCardInput from '../../components/shop/CreditCardInput'
 
 function Payment(props) {
-  const [mycart, setMycart] = useState([])
-  const [mycartDisplay, setMycartDisplay] = useState([])
-  const [dataLoading, setDataLoading] = useState(false)
-  // const [username, setUsername] = useState('')
-  const [agreement, setAgreement] = useState(false) //同意條款
+  const [agreement, setAgreement] = useState(false) //是否勾同意條款
   const [itemIds, setItemIds] = useState([])
-  const [totalPrice, setTotalPrice] = useState(1000) //如何不抓localstorage內的價錢?
-
+  const [payMethod, setPayMethod] = useState('') //付款方式
+  //credit card number input ref
+  const creditInputRef = useRef(null)
+  //safety code ref
+  const safetyCodeRef = useRef(null)
   //登入用戶的id
   const mbId = JSON.parse(localStorage.getItem('LoginUserData')).mbId
   const username = JSON.parse(localStorage.getItem('LoginUserData')).mbName
-  // const mbId = logindata.data.body.mbId
+
   //付款資訊傳到server
   async function submitPayment() {
-    let agree = document.querySelector('#agreement').checked
-    if (agree === !true) {
+    if (agreement === false) {
       //沒有勾同意就中斷
       Swal.fire('請勾選同意服務條款!')
       return
@@ -34,7 +31,7 @@ function Payment(props) {
 
     JSON.parse(localStorage.getItem('cart')).map((item, index) => {
       //如果id重複就略過
-      if (productId.indexOf(item.id.toString()) == -1) {
+      if (productId.indexOf(item.id.toString()) === -1) {
         productId.push(item.id.toString())
       }
     })
@@ -58,50 +55,24 @@ function Payment(props) {
     const response = await fetch(request)
     const data = await response.json()
     //若寫入資料庫成功就alert，跳轉order頁
-    if (data.result.affectedRows == 1) {
+    if (data.result.affectedRows === 1) {
       // alert('訂單成立!')
       Swal.fire('訂單成立!')
       props.history.push('/order')
     }
   }
 
-  //填信用卡號自動換格
   useEffect(() => {
-    $('.card-input').on('keyup', function() {
-      // console.log($(this).parent().next().find(".card-input"))
-      $(this).focus()
-      let contentLength = $(this).val().length
-      let maxLength = $(this).attr('maxLength')
-
-      let cardNum = ''
-      //數字超過4個跳下一格
-      if (contentLength == maxLength) {
-        $(this)
-          .parent()
-          .next()
-          .find('.card-input')
-          .focus()
-      }
-      $('.card-input').each(function() {
-        cardNum += $(this).val()
-      })
-      // console.log('卡號長度',cardNum.length)
-      if (cardNum.length < 16) {
-        $('#s-creditcard-alert').html('卡號長度不足')
+    //選擇信用卡付款就出現卡號輸入欄
+    function showcardinput() {
+      if (payMethod === 'creditcard') {
+        creditInputRef.current.style.maxHeight = '150px'
       } else {
-        $('#s-creditcard-alert').html('')
+        creditInputRef.current.style.maxHeight = '0px'
       }
-    })
-  }, [])
-
-  //選擇信用卡付款就出現卡號輸入欄
-  function showcardinput() {
-    if (document.querySelector('select').selectedIndex == 1) {
-      document.querySelector('.s-creditcard').style.maxHeight = '150px'
-    } else {
-      document.querySelector('.s-creditcard').style.maxHeight = '0px'
     }
-  }
+    showcardinput()
+  }, [payMethod])
 
   //驗證安全碼輸入
   function testpattern(input) {
@@ -110,21 +81,12 @@ function Payment(props) {
     // console.log('安全碼驗證',ok)
     //如果小於3位數就顯示錯誤訊息
     if (!ok) {
-      document.querySelector('.s-safetycode-result').innerHTML =
-        '安全碼格式錯誤'
+      safetyCodeRef.current.innerHTML = '安全碼格式錯誤'
     } else {
-      document.querySelector('.s-safetycode-result').innerHTML = ''
+      safetyCodeRef.current.innerHTML = ''
     }
   }
-  const loading = (
-    <>
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    </>
-  )
+
   const display = (
     <>
       <PayProgressbar />
@@ -147,8 +109,7 @@ function Payment(props) {
                 className="form-control-plaintext"
                 id="exampleInputPassword1"
                 placeholder=""
-                // onChange={e => setUsername(e.target.value)}
-                value={username}
+                defaultValue={username}
               />
             </div>
           </div>
@@ -161,83 +122,21 @@ function Payment(props) {
               <Form.Control
                 as="select"
                 className="mx-2 "
-                onChange={() => showcardinput()}
+                onChange={e => setPayMethod(e.target.value)}
               >
-                <option></option>
-                <option>信用卡</option>
-                <option>Line Pay</option>
+                <option value="">請選擇付款方式</option>
+                <option value="creditcard">信用卡</option>
+                <option value="other">Line Pay</option>
               </Form.Control>
             </Form.Group>
-
-            {/* <div className="col-sm-5 mx-1">
-              
-              <label class="form-check ">
-              <input type="radio" name="radio"/>
-              <span class="s-radio"></span>
-              <img
-                src="/images/shop/visaCard.png"
-                style={{ marginLeft: '10px' }}
-                alt="..."
-              />
-              </label>
-            </div> */}
           </div>
-          <div className="s-creditcard">
+          <div className="s-creditcard" ref={creditInputRef}>
             <div className="form-group row">
               <label className="col-sm-3 col-form-label text-right">
                 信用卡號
               </label>
-              <div className="col-sm-6 pl-2">
-                {/* <input
-                type="text"
-                className="form-check-input h5 "
-                id="exampleCheck1"
-                style={{ marginLeft: '-5px', marginRight: '10px' }}
-              /> */}
-                <div className="form-group form-row mx-2">
-                  <div className="col d-flex">
-                    <input
-                      type="password"
-                      className="form-control card-input"
-                      id="input1"
-                      placeholder=""
-                      maxLength="4"
-                    />
-                    <span style={{ lineHeight: '38px' }}> -</span>
-                  </div>
-
-                  <div className="col d-flex">
-                    <input
-                      type="password"
-                      className="form-control card-input"
-                      id="input2"
-                      placeholder=""
-                      maxLength="4"
-                    />
-                    <span style={{ lineHeight: '38px' }}> -</span>
-                  </div>
-
-                  <div className="col d-flex">
-                    <input
-                      type="password"
-                      className="form-control card-input"
-                      id="input3"
-                      placeholder=""
-                      maxLength="4"
-                    />
-                    <span style={{ lineHeight: '38px' }}> -</span>
-                  </div>
-
-                  <div className="col">
-                    <input
-                      type="text"
-                      className="form-control card-input"
-                      id="input4"
-                      placeholder=""
-                      maxLength="4"
-                    />
-                  </div>
-                </div>
+              <div className="col-sm-9 pl-2">
+                <CreditCardInput />
                 <span
                   id="s-creditcard-alert"
                   style={{ fontSize: '12px', color: 'red' }}
@@ -302,7 +201,8 @@ function Payment(props) {
               />
               <span
                 className="s-safetycode-result"
-                style={{ fontSize: '12px', color: 'red' }}
+                style={{ fontSize: '12px', color: 'red', margin: '10px' }}
+                ref={safetyCodeRef}
               ></span>
             </div>
           </div>
@@ -316,7 +216,7 @@ function Payment(props) {
                 className="form-control-plaintext"
                 id="exampleInputPassword1"
                 placeholder=""
-                value={
+                defaultValue={
                   `/` + JSON.parse(localStorage.getItem('LoginUserData')).mbInv
                 }
               />
@@ -328,6 +228,7 @@ function Payment(props) {
                 type="checkbox"
                 className="s-form-check-input"
                 id="agreement"
+                onClick={() => setAgreement(prev => !prev)}
               />
               <span className="s-checkbox"></span>
               <label
@@ -365,7 +266,7 @@ function Payment(props) {
     <>
       <div className="container">
         {localStorage.getItem('LoginUserData') == null
-          ? props.history.push == '/cart_new'
+          ? props.history.push === '/cart_new'
           : display}
       </div>
     </>
