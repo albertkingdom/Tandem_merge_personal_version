@@ -10,6 +10,7 @@ function Payment(props) {
   const [agreement, setAgreement] = useState(false) //是否勾同意條款
   const [itemIds, setItemIds] = useState([])
   const [payMethod, setPayMethod] = useState('') //付款方式
+  const [cardNumberValidation, setCardNumberValidation] = useState(false)
   //credit card number input ref
   const creditInputRef = useRef(null)
   //safety code ref
@@ -17,7 +18,9 @@ function Payment(props) {
   //登入用戶的id
   const mbId = JSON.parse(localStorage.getItem('LoginUserData')).mbId
   const username = JSON.parse(localStorage.getItem('LoginUserData')).mbName
-
+  const checkCardNumber = () => {
+    setCardNumberValidation(true)
+  }
   //付款資訊傳到server
   async function submitPayment() {
     if (agreement === false) {
@@ -25,7 +28,10 @@ function Payment(props) {
       Swal.fire('請勾選同意服務條款!')
       return
     }
-
+    if (!cardNumberValidation) {
+      Swal.fire('請檢查信用卡號!')
+      return
+    }
     //抓localstorage的商品Id
     let productId = []
 
@@ -107,7 +113,6 @@ function Payment(props) {
               <input
                 type="text"
                 className="form-control-plaintext"
-                id="exampleInputPassword1"
                 placeholder=""
                 defaultValue={username}
               />
@@ -136,11 +141,11 @@ function Payment(props) {
                 信用卡號
               </label>
               <div className="col-sm-9 pl-2">
-                <CreditCardInput />
-                <span
+                <CreditCardInput checkCardNumber={checkCardNumber} />
+                {/* <span
                   id="s-creditcard-alert"
                   style={{ fontSize: '12px', color: 'red' }}
-                ></span>
+                ></span> */}
               </div>
             </div>
 
@@ -191,7 +196,6 @@ function Payment(props) {
               <input
                 type="text"
                 className="form-control-sm col-1 s-safetycode mt-1"
-                id="exampleInputPassword1"
                 placeholder=""
                 pattern="\d{3}"
                 onChange={() =>
@@ -214,7 +218,6 @@ function Payment(props) {
               <input
                 type="text"
                 className="form-control-plaintext"
-                id="exampleInputPassword1"
                 placeholder=""
                 defaultValue={
                   `/` + JSON.parse(localStorage.getItem('LoginUserData')).mbInv

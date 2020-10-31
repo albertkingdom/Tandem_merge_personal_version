@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 
-export default function CreditCardInput() {
+export default function CreditCardInput({ checkCardNumber }) {
   const [cardnumberLength, setCardnumberLength] = useState('')
   const [numberPart1, setNumberPart1] = useState('')
   const [numberPart2, setNumberPart2] = useState('')
@@ -32,6 +32,15 @@ export default function CreditCardInput() {
     } else {
       cardLengthWarnRef.current.innerHTML = ''
     }
+    //驗證卡號都是數字
+    function validation() {
+      let pattern = /^\d{16}/
+      let cardNumber = numberPart1 + numberPart2 + numberPart3 + numberPart4
+      if (cardNumber.match(pattern)) {
+        checkCardNumber()
+      }
+    }
+    validation()
   }, [numberPart2, numberPart3, numberPart4, numberPart1, cardnumberLength])
   return (
     <>
@@ -42,12 +51,13 @@ export default function CreditCardInput() {
             onKeyUp={e => setNumberPart1(e.target.value)}
             ref={numberPart1Ref}
             className="form-control"
+            required
           ></input>
         </div>
 
         <input
           type="text"
-          defautvalue="-"
+          defaultValue="-"
           style={{ width: '10px' }}
           readOnly
           className="form-control-plaintext"
@@ -58,11 +68,13 @@ export default function CreditCardInput() {
             onKeyUp={e => setNumberPart2(e.target.value)}
             ref={numberPart2Ref}
             className="form-control"
+            pattern="^[0-9]"
+            required
           ></input>
         </div>
         <input
           type="text"
-          defautvalue="-"
+          defaultValue="-"
           style={{ width: '10px' }}
           className="form-control-plaintext"
         ></input>
@@ -72,11 +84,12 @@ export default function CreditCardInput() {
             onKeyUp={e => setNumberPart3(e.target.value)}
             ref={numberPart3Ref}
             className="form-control"
+            required
           ></input>
         </div>
         <input
           type="text"
-          defautvalue="-"
+          defaultValue="-"
           style={{ width: '10px' }}
           className="form-control-plaintext"
         ></input>
@@ -87,6 +100,7 @@ export default function CreditCardInput() {
             ref={numberPart4Ref}
             className="form-control"
             maxLength="4"
+            required
           ></input>
         </div>
       </div>
