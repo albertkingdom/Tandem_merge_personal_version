@@ -109,10 +109,10 @@ function App() {
             <Route path="/cart_new">
               <Cart_new />
             </Route>
-            <Route path="/productlist/:type?/:page?">
+            <Route path="/productlist">
               <ProductList />
             </Route>
-            <Route path="/product/:type?/:id?">
+            <Route path="/product/:id?">
               <Product />
             </Route>
             <Route path="/payment">

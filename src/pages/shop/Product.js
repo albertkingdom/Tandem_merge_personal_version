@@ -34,7 +34,7 @@ function Product(props) {
   const [isOpen, setIsOpen] = useState(false) //lightbox
   const [mbAzen_arr_state, setMbAzen_arr_state] = useState([]) //按讚顯示
   const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
-  let productId = props.match.params.type
+  let productId = props.match.params.id
 
   useEffect(() => {
     //fetch database product撈所有資料(不分類)

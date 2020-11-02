@@ -39,11 +39,11 @@ function CommentList(props) {
       name: JSON.parse(localStorage.getItem('LoginUserData')).mbNick,
       content: commentContent,
       rating: rating,
-      itemId: props.match.params.type,
+      itemId: props.match.params.id,
       parentId: parentId,
       memberId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
     }
-    console.log(userCommentContent)
+    // console.log(userCommentContent)
     // props.userCommentAsync(userCommentContent, () => {
     //   Swal.fire({
     //     text: '成功留言',
