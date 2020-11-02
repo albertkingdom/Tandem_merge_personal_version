@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, NavLink, withRouter } from 'react-router-dom'
-import Slider from '../../components/shop/Slider'
+import Slider from '../../components/shop/Slider/Slider'
 import Filterbar from '../../components/shop/Filterbar'
 
 // import '../../css/styles.scss'
@@ -171,6 +171,7 @@ function ProductList(props) {
                             img: value.itemImg,
                           })
                         }
+                        to="#"
                       >
                         {/* <i class="fas fa-shopping-cart"></i> */}
                         <AiOutlineShoppingCart
@@ -206,6 +207,7 @@ function ProductList(props) {
                               Swal.fire('請先登入')
                             }
                           }}
+                          to="#"
                         >
                           <AiFillHeart
                             style={{ color: '#F9A451', fontSize: '24px' }}
@@ -235,6 +237,7 @@ function ProductList(props) {
                               Swal.fire('請先登入')
                             }
                           }}
+                          to="#"
                         >
                           <AiOutlineHeart
                             style={{ color: '#F9A451', fontSize: '24px' }}

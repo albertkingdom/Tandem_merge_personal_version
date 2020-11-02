@@ -14,7 +14,11 @@ function Pagination({ totalpage, paginate, currentpage }) {
           {/* 新的頁數bar開始 */}
           <ul className="d-flex flex-wrap justify-content-center">
             <li className="s-pageItem">
-              <Link className="" onClick={() => paginate(currentpage - 1)}>
+              <Link
+                className=""
+                onClick={() => paginate(currentpage - 1)}
+                to="#"
+              >
                 <AiOutlineCaretLeft />
               </Link>
             </li>
@@ -32,6 +36,7 @@ function Pagination({ totalpage, paginate, currentpage }) {
                     onClick={() => {
                       paginate(number)
                     }}
+                    to="#"
                   >
                     {number}
                   </Link>
@@ -39,7 +44,11 @@ function Pagination({ totalpage, paginate, currentpage }) {
               )
             })}
             <li className="s-pageItem">
-              <Link className="" onClick={() => paginate(currentpage + 1)}>
+              <Link
+                className=""
+                onClick={() => paginate(currentpage + 1)}
+                to="#"
+              >
                 <AiOutlineCaretRight />
               </Link>
             </li>

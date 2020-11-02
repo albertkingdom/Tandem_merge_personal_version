@@ -193,7 +193,7 @@ function Order(props) {
           type="button"
           className="btn btn-outline-info s-btn-common mx-2"
           onClick={() => {
-            sendOrderEmail()
+            // sendOrderEmail()
             props.history.push('/productlist')
             localStorage.removeItem('cart')
           }}

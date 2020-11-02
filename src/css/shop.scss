@@ -169,8 +169,8 @@ h6 {
 .s-coupon-used {
   background-color: gray;
   position: absolute;
- 
-  top:0;
+
+  top: 0;
   left: 0;
   width: 240px;
 
@@ -180,13 +180,13 @@ h6 {
   text-align: center;
   color: white;
   line-height: 100%;
- 
+
   display: none;
-  p{
-        top:50%;
+  p {
+    top: 50%;
     left: 50%;
     position: absolute;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     font-size: 28px;
   }
 }
@@ -260,10 +260,15 @@ h6 {
   background: white;
   transition: 0.5s;
   border: 1px solid lightgrey;
-  a {
+  button {
     position: absolute;
-    top: 45%;
-    left: 45%;
+    // top: 45%;
+    // left: 45%;
+    height: 100%;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    color: #1890ff;
   }
 }
 .sbox-s h2 {
@@ -279,6 +284,9 @@ h6 {
       opacity: 50%;
   
   } */
+.s-slider-box {
+  transition: background-image 0.5s ease-in-out;
+}
 .s-slider-box:hover .sbox-s {
   /* width: 80%;
     height: 70%; */
@@ -628,14 +636,13 @@ button:focus {
   margin-top: 20px;
 }
 
-button.section-select{
-  border:none;
+button.section-select {
+  border: none;
   font-size: 20px;
   background-color: #fff;
-  color:#79cee2;
+  color: #79cee2;
   margin: 10px;
-  &.active{
+  &.active {
     border-bottom: 2px solid #79cee2;
-
   }
 }
