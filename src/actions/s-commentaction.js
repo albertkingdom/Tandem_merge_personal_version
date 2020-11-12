@@ -19,11 +19,11 @@ export const userCommentAsync = (userCommentContent, callback) => {
       }
     )
 
-    console.log(JSON.stringify(userCommentContent))
+    // console.log(JSON.stringify(userCommentContent))
 
     const response = await fetch(request)
     const data = await response.json()
-    console.log('res data', data)
+    // console.log('res data', data)
 
     dispatch(userLeftMessage(data))
     callback()

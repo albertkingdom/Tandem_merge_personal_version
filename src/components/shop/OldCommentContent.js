@@ -39,19 +39,24 @@ function OldCommentContent({
       {msg.parentId === 0 ? (
         <div className="s-card my-2">
           <div className="card-body position-relative">
-            {/* 編輯按鈕 */}
-            <button
-              className="s-comment-del-btn"
-              onClick={() => handleDelMsg(msg.id)}
-            >
-              <AiOutlineDelete />
-            </button>
-            <button
-              className="s-comment-edit-btn"
-              onClick={() => handleEditMsg(msg.id)}
-            >
-              <AiOutlineEdit />
-            </button>
+            {/* 編輯 刪除按鈕，留言者本人才能回覆 */}
+            {msg.mbId ===
+            JSON.parse(localStorage.getItem('LoginUserData')).mbId ? (
+              <>
+                <button
+                  className="s-comment-del-btn"
+                  onClick={() => handleDelMsg(msg.id)}
+                >
+                  <AiOutlineDelete />
+                </button>
+                <button
+                  className="s-comment-edit-btn"
+                  onClick={() => handleEditMsg(msg.id)}
+                >
+                  <AiOutlineEdit />
+                </button>
+              </>
+            ) : null}
             <div className="row">
               <div className="col-5 col-md-2">
                 <img

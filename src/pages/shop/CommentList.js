@@ -181,6 +181,7 @@ function CommentList(props) {
         <NewCommentContent
           toSetRating={toSetRating}
           toSetCommentContent={toSetCommentContent}
+          commentContent={commentContent}
           handleSubmit={handleSubmit}
           avatorImgSrc={JSON.parse(localStorage.getItem('LoginUserData')).mbAva}
           msgCreatedAt={null}

@@ -11,6 +11,7 @@ const NewCommentContent = ({
   oldCommentContent,
   handleDelMsg,
   handleEditMsg,
+  commentContent,
 }) => {
   return (
     <div className="s-card my-2">
@@ -64,6 +65,7 @@ const NewCommentContent = ({
                 className="form-control col-md-10 p mt-2"
                 placeholder="請留言..."
                 onChange={e => toSetCommentContent(e.target.value)}
+                value={commentContent}
               ></textarea>
             </form>
             <p>
