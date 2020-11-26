@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { withRouter, NavLink, Switch, Route, Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import Config from './Config'
 
 import CommentList from './CommentList'
@@ -22,8 +22,11 @@ import {
   cancelAzenToDatabase,
   updateCartToLocalStorage,
 } from '../../components/shop/Functions/Function'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 
 function Product(props) {
+  const isLogin = useLoginStatus() //custom hook
+
   const [myproduct, setMyproduct] = useState([])
   const [configORcomment, setCofigORcomment] = useState(1) //1:建議配備, 2:留言板
   const [whoAzen, setWhoAzen] = useState('') //記錄此商品被那些mbId收藏，從商品database撈出的資料
@@ -60,23 +63,26 @@ function Product(props) {
 
   //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
-      if (localStorage.getItem('Azen') == null) {
-        let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-          .mbAzen
-        mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-        let mbAzen_arr = mbAzen_str.split(',')
-        // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-        localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-        setMbAzen_arr_state(mbAzen_arr)
+    const CopyAzenListToLocal = () => {
+      if (isLogin) {
+        if (localStorage.getItem('Azen') == null) {
+          let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
+            .mbAzen
+          mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
+          let mbAzen_arr = mbAzen_str.split(',')
+          // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
+          localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
+          setMbAzen_arr_state(mbAzen_arr)
+        } else {
+          const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
+          setMbAzen_arr_state(currentLocalAzen)
+        }
       } else {
-        const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-        setMbAzen_arr_state(currentLocalAzen)
+        localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
       }
-    } else {
-      localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
     }
-  }, [])
+    CopyAzenListToLocal()
+  }, [isLogin])
   //點商品小圖=>展示大圖
   function clickTochangePic(e) {
     // console.log('this is',e)
@@ -216,9 +222,7 @@ function Product(props) {
                 type="button"
                 className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
                 onClick={() => {
-                  if (
-                    JSON.parse(localStorage.getItem('LoginUserData')) !== null
-                  ) {
+                  if (isLogin) {
                     addAzenToDatabase({
                       userId: JSON.parse(localStorage.getItem('LoginUserData'))
                         .mbId,

@@ -14,7 +14,6 @@ function OldCommentContent({
   handleDelMsg,
   msg,
   handleSubmit,
-  toSetCommentContent,
   oldCommentContent,
 }) {
   const [showReply, setShowReply] = useState(false)
@@ -69,7 +68,7 @@ function OldCommentContent({
               <div className="col-7 col-md-10">
                 <p className="row">
                   <a className="float-left col-md-8 py-2" href="/member">
-                    <strong>{msg.name}</strong>
+                    <strong>{msg.mbNick}</strong>
                   </a>
 
                   <span className="float-right col-md-3 row mx-2 py-2">
@@ -105,8 +104,7 @@ function OldCommentContent({
               <ReplyComment
                 handleSubmit={handleSubmit}
                 toggleShowReply={toggleShowReply}
-                msg={msg}
-                toSetCommentContent={toSetCommentContent}
+                parentId={msg.id}
               />
             ) : null}
           </div>
