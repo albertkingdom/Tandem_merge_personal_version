@@ -21,4 +21,4 @@
 - 優惠券使用
 - 結帳
 
-![shoppingcart]](https://imgur.com/cRMjupM.jpg)
+![shoppingcart](https://imgur.com/cRMjupM.jpg)
