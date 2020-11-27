@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, withRouter } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 import '../../css/shop.scss'
 import { AiOutlineDelete, AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
 import Swal from 'sweetalert2' //sweetalert2
@@ -12,8 +13,15 @@ import {
 import CouponDisplayList from './CouponDisplayList'
 import HistoryDisplay from './HistoryDisplay'
 import Loading from '../../components/shop/Loading'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
+import {
+  getAzenListfromStorage,
+  addAzenIdToRedux,
+  removeAzenIdFromRedux,
+} from '../../actions/SazenActions'
 
-function Cart_new(props) {
+function ShoppingCart(props) {
+  const isLogin = useLoginStatus() //custom hook
   const [mycartDisplay, setMycartDisplay] = useState([])
   const [dataLoading, setDataLoading] = useState(false)
   const [isSelectCoupon, setIsSelectCoupon] = useState(false)
@@ -23,7 +31,13 @@ function Cart_new(props) {
   const [discount, setDiscount] = useState(0) //折扣多少錢
   const [browsehistory, setBrowseHistory] = useState([]) //瀏覽紀錄相關資訊
   const [couponOrhistory, setCouponOrHistory] = useState(0)
-  const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
+  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
+  const reduxAzenList = useSelector(state => state.SuserAzen.list)
+  const reduxAzenStatus = useSelector(
+    state => state.SuserAzen.isGetDataFromStorage
+  )
+
+  const dispatch = useDispatch()
 
   function getCartFromLocalStorage() {
     // setDataLoading(true)
@@ -33,7 +47,7 @@ function Cart_new(props) {
       setMycartDisplay(JSON.parse(newCart))
     }
   }
-  //一開始就會載入資料
+  //一開始就會載入購物車資料
   useEffect(() => {
     getCartFromLocalStorage()
   }, [])
@@ -114,30 +128,20 @@ function Cart_new(props) {
     setCoupon(data)
   }
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
+    if (isLogin) {
       getCoupon()
     }
-  }, [])
+  }, [isLogin])
 
-  //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
-      if (localStorage.getItem('Azen') == null) {
-        let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-          .mbAzen
-        mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-        let mbAzen_arr = mbAzen_str.split(',')
-        // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-        localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-        setMbAzen_arr_state(mbAzen_arr)
-      } else {
-        const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-        setMbAzen_arr_state(currentLocalAzen)
+    //確認redux內有無按讚清單
+    if (isLogin) {
+      if (!reduxAzenStatus) {
+        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+        dispatch(getAzenListfromStorage())
       }
-    } else {
-      localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
     }
-  }, [])
+  }, [dispatch, isLogin, reduxAzenStatus])
 
   useEffect(() => {
     //抓瀏覽紀錄相關資訊
@@ -204,18 +208,13 @@ function Cart_new(props) {
                         </td>
                         <td className="h5">NT${value.price}</td>
                         <td>
-                          {JSON.parse(localStorage.getItem('LoginUserData')) !==
-                            null &&
-                          mbAzen_arr_state.indexOf(`${value.id}`) !== -1 ? (
+                          {isLogin &&
+                          reduxAzenList.indexOf(`${value.id}`) !== -1 ? (
                             <button
                               type="button"
                               className="btn mx-2 my-2 s-btn-common-cart"
                               onClick={() => {
-                                if (
-                                  JSON.parse(
-                                    localStorage.getItem('LoginUserData')
-                                  ) !== null
-                                ) {
+                                if (isLogin) {
                                   updateAzenToLocalStorage(value.id)
                                   cancelAzenToDatabase({
                                     userId: JSON.parse(
@@ -223,11 +222,8 @@ function Cart_new(props) {
                                     ).mbId,
                                     unlikeproductId: value.id,
                                   })
-                                  setMbAzen_arr_state(prevazenlist =>
-                                    prevazenlist.filter(
-                                      id => id !== `${value.id}`
-                                    )
-                                  )
+
+                                  dispatch(removeAzenIdFromRedux(value.id))
                                 } else {
                                   Swal.fire('請先登入!')
                                 }
@@ -242,11 +238,7 @@ function Cart_new(props) {
                               type="button"
                               className="btn mx-2 my-2 s-btn-common-cart"
                               onClick={() => {
-                                if (
-                                  JSON.parse(
-                                    localStorage.getItem('LoginUserData')
-                                  ) !== null
-                                ) {
+                                if (isLogin) {
                                   addAzenToDatabase({
                                     userId: JSON.parse(
                                       localStorage.getItem('LoginUserData')
@@ -254,10 +246,8 @@ function Cart_new(props) {
                                     likeproductId: value.id,
                                   })
                                   updateAzenToLocalStorage(value.id)
-                                  setMbAzen_arr_state(prevazenlist => [
-                                    ...prevazenlist,
-                                    `${value.id}`,
-                                  ])
+
+                                  dispatch(addAzenIdToRedux(value.id))
                                 } else {
                                   Swal.fire('請先登入!')
                                 }
@@ -402,9 +392,7 @@ function Cart_new(props) {
           style={{ fontWeight: '400' }}
           to="#"
           onClick={() => {
-            JSON.parse(localStorage.getItem('LoginUserData')) == null
-              ? Swal.fire('請先登入')
-              : props.history.push('/payment')
+            isLogin ? Swal.fire('請先登入') : props.history.push('/payment')
           }}
         >
           下一步，填付款資訊
@@ -419,4 +407,4 @@ function Cart_new(props) {
   )
 }
 
-export default withRouter(Cart_new)
+export default withRouter(ShoppingCart)

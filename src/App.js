@@ -41,7 +41,7 @@ import ProductList from './pages/shop/ProductList'
 import Product from './pages/shop/Product'
 import Payment from './pages/shop/Payment'
 import Order from './pages/shop/Order'
-import Cart_new from './pages/shop/Cart_new'
+import ShoppingCart from './pages/shop/ShoppingCart'
 import Mbtestpage from './pages/member/Mbtestpage'
 
 function App() {
@@ -106,8 +106,8 @@ function App() {
             <Route path="/member">
               <Mbcenterindex />
             </Route>
-            <Route path="/cart_new">
-              <Cart_new />
+            <Route path="/cart">
+              <ShoppingCart />
             </Route>
             <Route path="/productlist">
               <ProductList />

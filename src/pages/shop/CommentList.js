@@ -163,7 +163,11 @@ function CommentList(props) {
           // toSetCommentContent={toSetCommentContent}
           // commentContent={commentContent}
           handleSubmit={handleSubmit}
-          avatorImgSrc={JSON.parse(localStorage.getItem('LoginUserData')).mbAva}
+          avatorImgSrc={
+            isLogin
+              ? JSON.parse(localStorage.getItem('LoginUserData')).mbAva
+              : null
+          }
           // msgCreatedAt={null}
           isOldComment={false}
         />
@@ -176,6 +180,7 @@ function CommentList(props) {
             handleSubmit={handleSubmit}
             // toSetCommentContent={toSetCommentContent}
             oldCommentContent={oldCommentContent}
+            isLogin={isLogin}
           />
         ))}
       </div>

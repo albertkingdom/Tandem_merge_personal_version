@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   AiOutlineHeart,
   AiOutlineShoppingCart,
@@ -12,13 +13,16 @@ import {
   cancelAzenToDatabase,
   updateCartToLocalStorage,
 } from '../../components/shop/Functions/Function'
+import {
+  addAzenIdToRedux,
+  removeAzenIdFromRedux,
+} from '../../actions/SazenActions'
 
-export default function ProductListItem({
-  value,
-  isLogin,
-  mbAzen_arr_state,
-  setMemberAzenState,
-}) {
+export default function ProductListItem({ value, isLogin }) {
+  const reduxAzenList = useSelector(state => state.SuserAzen.list)
+
+  const dispatch = useDispatch()
+
   return (
     <div className="col-6 col-lg-4 col-sm-6">
       <div className="s-cardwrap">
@@ -59,15 +63,14 @@ export default function ProductListItem({
               </Link>
 
               {/* <i class="far fa-heart"></i> */}
-              {isLogin && mbAzen_arr_state.indexOf(`${value.itemId}`) !== -1 ? (
+              {isLogin && reduxAzenList.indexOf(`${value.itemId}`) !== -1 ? (
                 <Link
                   className="col-2"
                   onClick={() => {
                     if (isLogin) {
                       updateAzenToLocalStorage(value.itemId)
-                      setMemberAzenState(prevazenlist =>
-                        prevazenlist.filter(id => id !== `${value.itemId}`)
-                      )
+
+                      dispatch(removeAzenIdFromRedux(value.itemId))
                       cancelAzenToDatabase({
                         userId: JSON.parse(
                           localStorage.getItem('LoginUserData')
@@ -94,10 +97,8 @@ export default function ProductListItem({
                         likeproductId: value.itemId,
                       })
                       updateAzenToLocalStorage(value.itemId)
-                      setMemberAzenState(prevazenlist => [
-                        ...prevazenlist,
-                        `${value.itemId}`,
-                      ])
+
+                      dispatch(addAzenIdToRedux(value.itemId))
                     } else {
                       Swal.fire('請先登入')
                     }

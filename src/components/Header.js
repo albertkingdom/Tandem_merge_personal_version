@@ -425,9 +425,9 @@ function Header() {
               </NavLink>
             </li>
             <li className="T-personiconpart">
-              <NavLink href="/cart_new">
+              <Link to="/cart" className="nav-link">
                 <AiOutlineShoppingCart />
-              </NavLink>
+              </Link>
             </li>
             <li className="T-personiconpart">
               <NavLink onClick={mayIShow}>

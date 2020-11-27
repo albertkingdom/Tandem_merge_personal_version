@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { withRouter } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+
 import Slider from '../../components/shop/Slider/Slider'
 import Filterbar from '../../components/shop/Filterbar'
 import Pagination from '../../components/shop/Pagination'
@@ -7,6 +9,7 @@ import FilterDisplay from '../../components/shop/FilterDisplay'
 import ProductListItem from '../../components/shop/ProductListItem'
 import '../../css/shop.scss'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
+import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ProductList(props) {
   const isLogin = useLoginStatus() //custom hook
@@ -17,7 +20,7 @@ function ProductList(props) {
   const [vendor, setVendor] = useState('V000')
   const [price, setPrice] = useState(9999)
   const [orderBy, setOrderBy] = useState('itemId')
-  const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
+  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
 
   // const searchParams = new URLSearchParams(props.location.search)
 
@@ -71,44 +74,47 @@ function ProductList(props) {
     setCurrentpage(1)
   }
 
+  // useEffect(() => {
+  //   //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
+  //   const CopyAzenListToLocal = () => {
+  //     if (isLogin) {
+  //       if (localStorage.getItem('Azen') == null) {
+  //         let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
+  //           .mbAzen
+  //         mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
+  //         let mbAzen_arr = mbAzen_str.split(',')
+  //         // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
+  //         localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
+  //         setMbAzen_arr_state(mbAzen_arr)
+  //       } else {
+  //         const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
+  //         setMbAzen_arr_state(currentLocalAzen)
+  //       }
+  //     } else {
+  //       localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
+  //     }
+  //   }
+  //   CopyAzenListToLocal()
+  // }, [isLogin])
+  const reduxAzenStatus = useSelector(
+    state => state.SuserAzen.isGetDataFromStorage
+  )
+
+  const dispatch = useDispatch()
   useEffect(() => {
-    //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
-    const CopyAzenListToLocal = () => {
-      if (isLogin) {
-        if (localStorage.getItem('Azen') == null) {
-          let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-            .mbAzen
-          mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-          let mbAzen_arr = mbAzen_str.split(',')
-          // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-          localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-          setMbAzen_arr_state(mbAzen_arr)
-        } else {
-          const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-          setMbAzen_arr_state(currentLocalAzen)
-        }
-      } else {
-        localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
+    //確認redux內有無按讚清單
+    if (isLogin) {
+      if (!reduxAzenStatus) {
+        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+        dispatch(getAzenListfromStorage())
       }
     }
-    CopyAzenListToLocal()
-  }, [isLogin])
-
-  const setMemberAzenState = array => {
-    setMbAzen_arr_state(array)
-  }
-
+  }, [dispatch, isLogin, reduxAzenStatus])
   const main = (
     <>
       <div className="row">
         {myproduct.map(value => (
-          <ProductListItem
-            key={value.itemId}
-            value={value}
-            isLogin={isLogin}
-            mbAzen_arr_state={mbAzen_arr_state}
-            setMemberAzenState={setMemberAzenState}
-          />
+          <ProductListItem key={value.itemId} value={value} isLogin={isLogin} />
         ))}
       </div>
     </>

@@ -15,6 +15,7 @@ function OldCommentContent({
   msg,
   handleSubmit,
   oldCommentContent,
+  isLogin,
 }) {
   const [showReply, setShowReply] = useState(false)
 
@@ -39,8 +40,9 @@ function OldCommentContent({
         <div className="s-card my-2">
           <div className="card-body position-relative">
             {/* 編輯 刪除按鈕，留言者本人才能回覆 */}
-            {msg.mbId ===
-            JSON.parse(localStorage.getItem('LoginUserData')).mbId ? (
+            {isLogin &&
+            msg.mbId ===
+              JSON.parse(localStorage.getItem('LoginUserData')).mbId ? (
               <>
                 <button
                   className="s-comment-del-btn"
