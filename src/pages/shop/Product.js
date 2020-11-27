@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { withRouter } from 'react-router-dom'
 import Config from './Config'
-
 import CommentList from './CommentList'
 import Recommend from './Recommend'
 import {
