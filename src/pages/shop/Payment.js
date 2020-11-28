@@ -8,7 +8,7 @@ import CreditCardInput from '../../components/shop/CreditCardInput'
 
 function Payment(props) {
   const [agreement, setAgreement] = useState(false) //是否勾同意條款
-  const [itemIds, setItemIds] = useState([])
+  // const [itemIds, setItemIds] = useState([])
   const [payMethod, setPayMethod] = useState('') //付款方式
   const [cardNumberValidation, setCardNumberValidation] = useState(false)
   //credit card number input ref
@@ -32,17 +32,10 @@ function Payment(props) {
       Swal.fire('請檢查信用卡號!')
       return
     }
-    //抓localstorage的商品Id
-    let productId = []
 
-    JSON.parse(localStorage.getItem('cart')).map((item, index) => {
-      //如果id重複就略過
-      if (productId.indexOf(item.id.toString()) === -1) {
-        productId.push(item.id.toString())
-      }
-    })
-    setItemIds(productId) //設定商品id to state
-
+    let productId = JSON.parse(localStorage.getItem('cart')).map(
+      item => item.id
+    )
     const body = {
       username: username,
       itemIds: JSON.stringify(productId),
@@ -250,7 +243,7 @@ function Payment(props) {
           type="button"
           className="btn btn-outline-info s-btn-common mx-2"
           style={{ fontWeight: '400' }}
-          to="/cart_new"
+          to="/cart"
         >
           上一頁
         </Link>
@@ -269,7 +262,7 @@ function Payment(props) {
     <>
       <div className="container">
         {localStorage.getItem('LoginUserData') == null
-          ? props.history.push === '/cart_new'
+          ? props.history.push === '/cart'
           : display}
       </div>
     </>

@@ -67,7 +67,7 @@ function ShoppingCart(props) {
     setCouponNo(couponNo)
   }
   //取消使用折價券
-  const handleCouponSelect2 = () => {
+  const cancelCouponSelect = () => {
     setIsSelectCoupon(false)
     setDiscount(0)
   }
@@ -270,7 +270,7 @@ function ShoppingCart(props) {
               isSelectCoupon={isSelectCoupon}
               couponNo={couponNo}
               handleCouponSelect={handleCouponSelect}
-              handleCouponSelect2={handleCouponSelect2}
+              cancelCouponSelect={cancelCouponSelect}
             />
           ) : (
             <HistoryDisplay
@@ -296,7 +296,7 @@ function ShoppingCart(props) {
           style={{ fontWeight: '400' }}
           to="#"
           onClick={() => {
-            isLogin ? Swal.fire('請先登入') : props.history.push('/payment')
+            !isLogin ? Swal.fire('請先登入') : props.history.push('/payment')
           }}
         >
           下一步，填付款資訊
