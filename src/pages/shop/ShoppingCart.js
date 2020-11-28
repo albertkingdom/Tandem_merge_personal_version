@@ -2,41 +2,33 @@ import React, { useState, useEffect } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import '../../css/shop.scss'
-import { AiOutlineDelete, AiOutlineHeart, AiFillHeart } from 'react-icons/ai'
+
 import Swal from 'sweetalert2' //sweetalert2
 import PayProgressbar from '../../components/shop/PayProgessbar'
-import {
-  cancelAzenToDatabase,
-  updateAzenToLocalStorage,
-  addAzenToDatabase,
-} from '../../components/shop/Functions/Function'
+
 import CouponDisplayList from './CouponDisplayList'
 import HistoryDisplay from './HistoryDisplay'
 import Loading from '../../components/shop/Loading'
+import ShoppingCartItem from '../../components/shop/ShoppingCartItem'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
-import {
-  getAzenListfromStorage,
-  addAzenIdToRedux,
-  removeAzenIdFromRedux,
-} from '../../actions/SazenActions'
+//action creator
+import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ShoppingCart(props) {
   const isLogin = useLoginStatus() //custom hook
   const [mycartDisplay, setMycartDisplay] = useState([])
-  const [dataLoading, setDataLoading] = useState(false)
+
   const [isSelectCoupon, setIsSelectCoupon] = useState(false)
   const [totalMoney, setTotalMoney] = useState(0) //總金額
   const [coupon, setCoupon] = useState([]) //coupon資訊
   const [couponNo, setCouponNo] = useState('')
   const [discount, setDiscount] = useState(0) //折扣多少錢
   const [browsehistory, setBrowseHistory] = useState([]) //瀏覽紀錄相關資訊
-  const [couponOrhistory, setCouponOrHistory] = useState(0)
-  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
-  const reduxAzenList = useSelector(state => state.SuserAzen.list)
+  const [couponOrhistory, setCouponOrHistory] = useState(0) //顯示折價券or瀏覽紀錄
+  //redux
   const reduxAzenStatus = useSelector(
     state => state.SuserAzen.isGetDataFromStorage
   )
-
   const dispatch = useDispatch()
 
   function getCartFromLocalStorage() {
@@ -53,7 +45,7 @@ function ShoppingCart(props) {
   }, [])
 
   // 刪除購物車項目
-  const updateCartToLocalStorage = value => {
+  const delProductFromCart = value => {
     // setDataLoading(true)
 
     const currentCart = JSON.parse(localStorage.getItem('cart')) || []
@@ -152,21 +144,10 @@ function ShoppingCart(props) {
     }
     gethistoryfromlocalstorage()
   }, [])
-  //  歷史紀錄商品加入購物車
-  function addHistoryItemtToLocalStorage(value) {
-    // setDataLoading(true)
-    Swal.fire({ html: `成功加入購物車` })
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || []
-    let arr = []
-    currentCart.forEach(element => {
-      arr.push(element.id === value.id)
-    })
-    if (arr.indexOf(true) === -1) {
-      const newCart = [...currentCart, value]
-      localStorage.setItem('cart', JSON.stringify(newCart))
-      // setMycart(newCart)
-      setMycartDisplay(newCart)
-    }
+
+  function updateMyCartDisplay() {
+    let newcart = JSON.parse(localStorage.getItem('cart'))
+    setMycartDisplay(newcart)
   }
 
   const display = (
@@ -193,90 +174,13 @@ function ShoppingCart(props) {
           <table className="table">
             <tbody className="s-cart-table">
               {mycartDisplay.length !== 0 ? (
-                mycartDisplay.map((value, index) => {
-                  return (
-                    <>
-                      <tr key={value.id}>
-                        <td className="s-columnWidth1">
-                          <Link to={`/product/${value.id}`}>
-                            <img
-                              src={`/images/shop/small_img/${value.img}`}
-                              className="img-fluid"
-                              alt="..."
-                            />
-                          </Link>
-                        </td>
-                        <td className="h5">NT${value.price}</td>
-                        <td>
-                          {isLogin &&
-                          reduxAzenList.indexOf(`${value.id}`) !== -1 ? (
-                            <button
-                              type="button"
-                              className="btn mx-2 my-2 s-btn-common-cart"
-                              onClick={() => {
-                                if (isLogin) {
-                                  updateAzenToLocalStorage(value.id)
-                                  cancelAzenToDatabase({
-                                    userId: JSON.parse(
-                                      localStorage.getItem('LoginUserData')
-                                    ).mbId,
-                                    unlikeproductId: value.id,
-                                  })
-
-                                  dispatch(removeAzenIdFromRedux(value.id))
-                                } else {
-                                  Swal.fire('請先登入!')
-                                }
-                              }}
-                            >
-                              <AiFillHeart
-                                style={{ color: '#F9A451', fontSize: '24px' }}
-                              />
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              className="btn mx-2 my-2 s-btn-common-cart"
-                              onClick={() => {
-                                if (isLogin) {
-                                  addAzenToDatabase({
-                                    userId: JSON.parse(
-                                      localStorage.getItem('LoginUserData')
-                                    ).mbId,
-                                    likeproductId: value.id,
-                                  })
-                                  updateAzenToLocalStorage(value.id)
-
-                                  dispatch(addAzenIdToRedux(value.id))
-                                } else {
-                                  Swal.fire('請先登入!')
-                                }
-                              }}
-                            >
-                              <AiOutlineHeart
-                                style={{ color: '#F9A451', fontSize: '24px' }}
-                              />
-                            </button>
-                          )}
-
-                          <button
-                            type="button"
-                            className="btn  mx-2 s-btn-common-cart"
-                            onClick={() =>
-                              updateCartToLocalStorage({
-                                id: value.id,
-                              })
-                            }
-                          >
-                            <AiOutlineDelete
-                              style={{ color: '#F9A451', fontSize: '24px' }}
-                            />
-                          </button>
-                        </td>
-                      </tr>
-                    </>
-                  )
-                })
+                mycartDisplay.map((value, index) => (
+                  <ShoppingCartItem
+                    key={value.id}
+                    value={value}
+                    delProductFromCart={delProductFromCart}
+                  />
+                ))
               ) : (
                 <tr>
                   <td className="text-center">
@@ -371,7 +275,7 @@ function ShoppingCart(props) {
           ) : (
             <HistoryDisplay
               browsehistory={browsehistory}
-              addHistoryItemtToLocalStorage={addHistoryItemtToLocalStorage}
+              updateMyCartDisplay={updateMyCartDisplay}
             />
           )}
         </div>
@@ -402,7 +306,7 @@ function ShoppingCart(props) {
   )
   return (
     <>
-      <div className="container">{dataLoading ? <Loading /> : display}</div>
+      <div className="container">{display}</div>
     </>
   )
 }
