@@ -34,7 +34,8 @@ import MdetectaddF from '../components/member/MdetectaddF'
 import ActivityCalendar from './activity/ActivityCalendar'
 // 登出相關
 import { mlogcontroll } from '../actions/Maction'
-
+//購物車計數
+import { getCartCountFromStorage } from '../actions/ScartActions'
 function Header() {
   // 判定登入狀態後進行畫面render
   const [loginAut, setLoginAut] = useState(false)
@@ -98,7 +99,8 @@ function Header() {
   const addFevent = useSelector(state => state.Mconfirmfriend)
   //展開RWDmenu
   const [rwdmenuopen, setRwdMenuOpen] = useState(false)
-
+  //cart商品數量
+  const cartCount = useSelector(state => state.Scart.count)
   //  登出按鈕發出一個function之後，修改上線狀態，清除local記憶，轉頁讓自己消失
   // const UserAuth = useSelector(state => state.MlogAuth)
   const userlogoff = () => {
@@ -205,7 +207,15 @@ function Header() {
       })
     }
   }
+  //redux cart count 狀態
+  const reduxCartCountStatus = useSelector(
+    state => state.Scart.isUpdateFromLocal
+  )
 
+  //將購物車數量以localstorage的數量更新
+  if (reduxCartCountStatus === false) {
+    dispatch(getCartCountFromStorage())
+  }
   return (
     <>
       <nav className="T-navWrapper container">
@@ -321,9 +331,7 @@ function Header() {
           {/* 購物車數量計量符號 */}
           {localStorage.getItem('cart') !== null ? (
             <div className="T-cartcount">
-              {localStorage.getItem('cart') !== null
-                ? JSON.parse(localStorage.getItem('cart')).length
-                : 0}
+              {localStorage.getItem('cart') !== null ? cartCount : 0}
             </div>
           ) : (
             ''

@@ -21,6 +21,7 @@ import getCommentData from './articleReducers'
 //Shop
 import Sleavecomment from './Sleavecomment'
 import SuserAzen from './SuserAzen'
+import Scart from './Scart'
 import { combineReducers } from 'redux'
 
 const allReducers = combineReducers({
@@ -41,6 +42,7 @@ const allReducers = combineReducers({
   getCommentData,
   Sleavecomment,
   SuserAzen,
+  Scart,
 })
 
 export default allReducers

@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { withRouter, Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import '../../css/shop.scss'
 import Swal from 'sweetalert2' //sweetalert2
 import { Form } from 'react-bootstrap'
 import PayProgressbar from '../../components/shop/PayProgessbar'
 import CreditCardInput from '../../components/shop/CreditCardInput'
+//action creator
+import { zeroCartCount } from '../../actions/ScartActions'
 
 function Payment(props) {
   const [agreement, setAgreement] = useState(false) //是否勾同意條款
@@ -18,6 +21,7 @@ function Payment(props) {
   //登入用戶的id
   const mbId = JSON.parse(localStorage.getItem('LoginUserData')).mbId
   const username = JSON.parse(localStorage.getItem('LoginUserData')).mbName
+  const dispatch = useDispatch()
   const checkCardNumber = () => {
     setCardNumberValidation(true)
   }
@@ -56,6 +60,7 @@ function Payment(props) {
     //若寫入資料庫成功就alert，跳轉order頁
     if (data.result.affectedRows === 1) {
       // alert('訂單成立!')
+      dispatch(zeroCartCount())
       Swal.fire('訂單成立!')
       props.history.push('/order')
     }

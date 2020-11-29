@@ -1,10 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { AiOutlineShoppingCart } from 'react-icons/ai'
 //other functions
 import { updateCartToLocalStorage } from '../../components/shop/Functions/Function'
+import { increaseCartCount } from '../../actions/ScartActions'
 
 function HistoryDisplay({ browsehistory, updateMyCartDisplay }) {
+  const dispatch = useDispatch()
+
   if (!browsehistory) {
     return (
       <div className="s-couponList text-center">
@@ -47,6 +51,7 @@ function HistoryDisplay({ browsehistory, updateMyCartDisplay }) {
                       img: item.itemImg,
                     })
                     updateMyCartDisplay()
+                    dispatch(increaseCartCount(item.itemId))
                   }}
                 />
               </Link>

@@ -28,6 +28,7 @@ import {
   addAzenIdToRedux,
   removeAzenIdFromRedux,
 } from '../../actions/SazenActions'
+import { increaseCartCount } from '../../actions/ScartActions'
 
 function Product(props) {
   const isLogin = useLoginStatus() //custom hook
@@ -42,12 +43,14 @@ function Product(props) {
   const [isOpen, setIsOpen] = useState(false) //lightbox
   // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([]) //按讚顯示
   const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
+
+  const dispatch = useDispatch()
+  //user按讚相關
   const reduxAzenList = useSelector(state => state.SuserAzen.list)
   const reduxAzenStatus = useSelector(
     state => state.SuserAzen.isGetDataFromStorage
   )
 
-  const dispatch = useDispatch()
   let productId = props.match.params.id
 
   useEffect(() => {
@@ -263,7 +266,7 @@ function Product(props) {
             <button
               type="button"
               className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
-              onClick={() =>
+              onClick={() => {
                 updateCartToLocalStorage({
                   id: myproduct.itemId,
                   name: myproduct.itemName,
@@ -271,7 +274,8 @@ function Product(props) {
                   price: myproduct.itemPrice,
                   img: myproduct.itemImg,
                 })
-              }
+                dispatch(increaseCartCount(myproduct.itemId))
+              }}
             >
               <AiOutlineShoppingCart
                 style={{ color: '#F9A451', fontSize: '24px' }}

@@ -1,17 +1,20 @@
+import * as actionTypes from '../actions/SactionTypes'
+
 const initialstate = { isGetDataFromStorage: false, list: [] }
+
 const userAzenProductList = (state = initialstate, action) => {
   switch (action.type) {
-    case 'ADD_FROM_STORAGE':
+    case actionTypes.getAzenListfromStorage:
       return {
         isGetDataFromStorage: true,
         list: [...state.list, ...action.payload.idList],
       }
-    case 'ADD':
+    case actionTypes.addAzenId:
       return {
         ...state,
         list: [...state.list, action.payload.newId.toString()],
       }
-    case 'REMOVE':
+    case actionTypes.removeAzenId:
       return {
         ...state,
         list: state.list.filter(id => id !== action.payload.oldId.toString()),

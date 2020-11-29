@@ -17,6 +17,7 @@ import {
   addAzenIdToRedux,
   removeAzenIdFromRedux,
 } from '../../actions/SazenActions'
+import { increaseCartCount } from '../../actions/ScartActions'
 
 export default function ProductListItem({ value, isLogin }) {
   const reduxAzenList = useSelector(state => state.SuserAzen.list)
@@ -45,7 +46,7 @@ export default function ProductListItem({ value, isLogin }) {
               <p className="card-text col-8 p-0">NT$ {value.itemPrice}</p>
               <Link
                 className="col-2"
-                onClick={() =>
+                onClick={() => {
                   updateCartToLocalStorage({
                     id: value.itemId,
                     name: value.itemName,
@@ -53,7 +54,8 @@ export default function ProductListItem({ value, isLogin }) {
                     price: value.itemPrice,
                     img: value.itemImg,
                   })
-                }
+                  dispatch(increaseCartCount(value.itemId))
+                }}
                 to="#"
               >
                 {/* <i class="fas fa-shopping-cart"></i> */}
