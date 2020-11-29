@@ -16,6 +16,7 @@ import {
   addAzenIdToRedux,
   removeAzenIdFromRedux,
 } from '../../actions/SazenActions'
+import { decreaseCartCount } from '../../actions/ScartActions'
 
 export default function ShoppingCartItem({ value, delProductFromCart }) {
   const isLogin = useLoginStatus() //custom hook
@@ -82,11 +83,12 @@ export default function ShoppingCartItem({ value, delProductFromCart }) {
         <button
           type="button"
           className="btn  mx-2 s-btn-common-cart"
-          onClick={() =>
+          onClick={() => {
             delProductFromCart({
               id: value.id,
             })
-          }
+            dispatch(decreaseCartCount(value.id))
+          }}
         >
           <AiOutlineDelete style={{ color: '#F9A451', fontSize: '24px' }} />
         </button>

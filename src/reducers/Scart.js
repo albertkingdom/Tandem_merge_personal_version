@@ -7,9 +7,15 @@ const cartCount = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.incrementCartCount:
       return {
-        isUpdateFromLocal: true,
+        ...state,
         count: state.count + 1,
         list: [...state.list, action.payload],
+      }
+    case actionTypes.decrementCartCount:
+      return {
+        ...state,
+        count: state.count - 1,
+        list: state.list.filter(id => id !== action.payload),
       }
     case actionTypes.zeroCartCount:
       return initialState

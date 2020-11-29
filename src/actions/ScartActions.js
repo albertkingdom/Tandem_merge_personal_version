@@ -9,11 +9,15 @@ export const increaseCartCount = id => (dispatch, state) => {
     dispatch({ type: actionTypes.incrementCartCount, payload: id })
   }
 }
+//cart計數-1
+export const decreaseCartCount = id => {
+  return { type: actionTypes.decrementCartCount, payload: id }
+}
 //將購物車計數器歸零
 export const zeroCartCount = () => {
   return { type: actionTypes.zeroCartCount }
 }
-
+//從localstorage取得cart
 export const getCartCountFromStorage = () => {
   let localCart = JSON.parse(localStorage.getItem('cart'))
   return {

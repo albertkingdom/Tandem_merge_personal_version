@@ -1,6 +1,8 @@
 //購物車計數cart count相關
 export const incrementCartCount = 'INCREASE_CART_COUNT'
 
+export const decrementCartCount = 'DECREASE_CART_COUNT'
+
 export const zeroCartCount = 'ZERO_CART_COUNT'
 
 export const getCartFromStorage = 'GET_CART_FROM_STORAGE'
