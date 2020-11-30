@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from 'react'
-import { withRouter, NavLink, Switch, Route } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import '../../css/shop.scss'
-import {
-  AiOutlineStar,
-  AiTwotoneStar,
-  AiOutlineMore,
-  AiOutlineDelete,
-  AiOutlineEdit,
-} from 'react-icons/ai'
-import { connect, useDispatch } from 'react-redux'
-import { bindActionCreators } from 'redux'
+
+import { useDispatch } from 'react-redux'
 import { userCommentAsync } from '../../actions/s-commentaction'
 import Swal from 'sweetalert2' //sweetalert2
-// import getMemberInfo from './getMemberInfo'
+
 import NewCommentContent from '../../components/shop/NewCommentContent'
 import OldCommentContent from '../../components/shop/OldCommentContent'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 
 function CommentList(props) {
   // console.log(props.leaveComment)
-  const [starLength, setStarLength] = useState(0)
-  //發表留言
-  const [commentContent, setCommentContent] = useState('')
-  const [username, setUsername] = useState('')
-  const [rating, setRating] = useState(5)
-  const [oldCommentContent, setOldCommentContent] = useState([])
-  //   const [parentId,setParentId] = useState(0)//留言父層id
-  // const [avator, setAvator] = useState({}) //留言大頭照
-  const dispatch = useDispatch() //使用dispatch
+  const isLogin = useLoginStatus() //custom hook
 
-  const handleSubmit = (parentId = 0) => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) == null) {
+  //發表留言
+  // const [commentContent, setCommentContent] = useState('')
+  // const [rating, setRating] = useState(0)
+  const [oldCommentContent, setOldCommentContent] = useState([])
+
+  const dispatch = useDispatch() //使用useDispatch hook
+
+  const handleSubmit = (parentId = 0, commentContent, rating = 0) => {
+    if (!isLogin) {
       //需登入才能留言
       Swal.fire({ html: '請先登入!' })
       return
@@ -43,18 +36,6 @@ function CommentList(props) {
       parentId: parentId,
       memberId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
     }
-    // console.log(userCommentContent)
-    // props.userCommentAsync(userCommentContent, () => {
-    //   Swal.fire({
-    //     text: '成功留言',
-    //     showCancelButton: false,
-    //     confirmButtonText: 'ok!',
-    //   }).then(result => {
-    //     if (result.value) {
-    //       window.location.reload()
-    //     }
-    //   })
-    // })
 
     //usedispatch
     dispatch(
@@ -65,9 +46,7 @@ function CommentList(props) {
           confirmButtonText: 'ok!',
         }).then(result => {
           if (result.value) {
-            // window.location.reload()
             getOldCommentAsync(productId) //重新抓舊留言
-            setCommentContent('')
           }
         })
       })
@@ -96,7 +75,7 @@ function CommentList(props) {
   const productId = props.productId //取得商品id，當作參數
   useEffect(() => {
     getOldCommentAsync(productId)
-  }, [])
+  }, [productId])
 
   //刪除留言功能
   function handleDelMsg(msgID) {
@@ -122,7 +101,7 @@ function CommentList(props) {
           .then(res => res.json())
           .then(data => {
             console.log(data)
-            if (data.result.affectedRows == 1) {
+            if (data.result.affectedRows === 1) {
               Swal.fire('成功刪除!').then(result => {
                 getOldCommentAsync(productId)
               })
@@ -169,22 +148,27 @@ function CommentList(props) {
         })
     }
   }
-  const toSetRating = value => {
-    setRating(value)
-  }
-  const toSetCommentContent = value => {
-    setCommentContent(value)
-  }
+  // const toSetRating = value => {
+  //   setRating(value)
+  // }
+  // const toSetCommentContent = value => {
+  //   setCommentContent(value)
+  // }
   const comment = (
     <>
       <div className="container">
         <NewCommentContent
-          toSetRating={toSetRating}
-          toSetCommentContent={toSetCommentContent}
-          commentContent={commentContent}
+          // toSetRating={toSetRating}
+          // rating={rating}
+          // toSetCommentContent={toSetCommentContent}
+          // commentContent={commentContent}
           handleSubmit={handleSubmit}
-          avatorImgSrc={JSON.parse(localStorage.getItem('LoginUserData')).mbAva}
-          msgCreatedAt={null}
+          avatorImgSrc={
+            isLogin
+              ? JSON.parse(localStorage.getItem('LoginUserData')).mbAva
+              : null
+          }
+          // msgCreatedAt={null}
           isOldComment={false}
         />
         {oldCommentContent.map(msg => (
@@ -194,8 +178,9 @@ function CommentList(props) {
             handleDelMsg={handleDelMsg}
             msg={msg}
             handleSubmit={handleSubmit}
-            toSetCommentContent={toSetCommentContent}
+            // toSetCommentContent={toSetCommentContent}
             oldCommentContent={oldCommentContent}
+            isLogin={isLogin}
           />
         ))}
       </div>
@@ -204,17 +189,5 @@ function CommentList(props) {
 
   return <>{comment}</>
 }
-// 取得Redux中isAuth的值
-// const mapStateToProps = store => {
-//   return { leaveComment: store.Sleavecomment.messageIsLeft }
-// }
-// // 指示dispatch要綁定哪些action creators
-// const mapDispatchToProps = dispatch => {
-//   return bindActionCreators({ userCommentAsync }, dispatch)
-// }
 
-// export default withRouter(
-//   connect(mapStateToProps, mapDispatchToProps)(Comment2)
-// )
-//利用dispatch
 export default withRouter(CommentList)

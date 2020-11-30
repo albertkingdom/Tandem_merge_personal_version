@@ -419,6 +419,7 @@ h6 {
   width: 100%;
   li {
     width: 25%;
+    cursor: pointer;
     img {
       width: 100%;
     }
@@ -431,6 +432,20 @@ h6 {
   overflow: hidden;
   h4 {
     color: #79cee2;
+  }
+  button {
+    z-index: 99;
+    position: absolute;
+    height: 90%;
+
+    background-color: whitesmoke;
+    border: none;
+  }
+  button#toPrevious {
+    left: 0px;
+  }
+  button#toNext {
+    right: 0px;
   }
 }
 

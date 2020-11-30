@@ -1,18 +1,11 @@
 import React, { useState } from 'react'
-import {
-  AiOutlineStar,
-  AiTwotoneStar,
-  AiOutlineMore,
-  AiOutlineDelete,
-  AiOutlineEdit,
-} from 'react-icons/ai'
+import useLoginStatus from './customHook/useLoginStatus'
 
-function ReplyComment({
-  handleSubmit,
-  toggleShowReply,
-  msg,
-  toSetCommentContent,
-}) {
+function ReplyComment({ handleSubmit, toggleShowReply, parentId }) {
+  const isLogin = useLoginStatus() //custom hook
+
+  const [commentContent, setCommentContent] = useState('')
+
   return (
     <>
       <div
@@ -43,7 +36,7 @@ function ReplyComment({
                     // placeholder="請輸入暱稱"
                     // onChange={e => setUsername(e.target.value)}
                     defaultValue={
-                      JSON.parse(localStorage.getItem('LoginUserData')) !== null
+                      isLogin
                         ? JSON.parse(localStorage.getItem('LoginUserData'))
                             .mbNick
                         : ''
@@ -56,14 +49,14 @@ function ReplyComment({
                 <textarea
                   className="col-md-10 p mt-2 form-control"
                   placeholder="請留言..."
-                  onChange={e => toSetCommentContent(e.target.value)}
+                  onChange={e => setCommentContent(e.target.value)}
                 ></textarea>
               </form>
               <p>
                 <button
                   className="float-right btn btn-outline-primary ml-2 s-btn-common"
                   onClick={e => {
-                    handleSubmit(msg.id)
+                    handleSubmit(parentId, commentContent)
                     toggleShowReply() //關掉回覆留言視窗
                   }}
                 >

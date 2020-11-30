@@ -14,8 +14,8 @@ function OldCommentContent({
   handleDelMsg,
   msg,
   handleSubmit,
-  toSetCommentContent,
   oldCommentContent,
+  isLogin,
 }) {
   const [showReply, setShowReply] = useState(false)
 
@@ -40,8 +40,9 @@ function OldCommentContent({
         <div className="s-card my-2">
           <div className="card-body position-relative">
             {/* 編輯 刪除按鈕，留言者本人才能回覆 */}
-            {msg.mbId ===
-            JSON.parse(localStorage.getItem('LoginUserData')).mbId ? (
+            {isLogin &&
+            msg.mbId ===
+              JSON.parse(localStorage.getItem('LoginUserData')).mbId ? (
               <>
                 <button
                   className="s-comment-del-btn"
@@ -69,7 +70,7 @@ function OldCommentContent({
               <div className="col-7 col-md-10">
                 <p className="row">
                   <a className="float-left col-md-8 py-2" href="/member">
-                    <strong>{msg.name}</strong>
+                    <strong>{msg.mbNick}</strong>
                   </a>
 
                   <span className="float-right col-md-3 row mx-2 py-2">
@@ -105,8 +106,7 @@ function OldCommentContent({
               <ReplyComment
                 handleSubmit={handleSubmit}
                 toggleShowReply={toggleShowReply}
-                msg={msg}
-                toSetCommentContent={toSetCommentContent}
+                parentId={msg.id}
               />
             ) : null}
           </div>

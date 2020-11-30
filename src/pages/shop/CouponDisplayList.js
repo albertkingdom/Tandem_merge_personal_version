@@ -6,14 +6,14 @@ function CouponDisplayList({
   isSelectCoupon,
   couponNo,
   handleCouponSelect,
-  handleCouponSelect2,
+  cancelCouponSelect,
 }) {
   return (
     <div className="s-couponList p-4">
       {JSON.parse(localStorage.getItem('LoginUserData')) !== null ? (
         <>
           <h5>你有{coupon.length}張折價券可使用</h5>
-          <h5>已選 {isSelectCoupon == true ? '1' : '0'}張</h5>
+          <h5>已選 {isSelectCoupon === true ? '1' : '0'}張</h5>
         </>
       ) : (
         <>
@@ -40,7 +40,7 @@ function CouponDisplayList({
             key={item.sId}
             item={item}
             handleCouponSelect={handleCouponSelect}
-            handleCouponSelect2={handleCouponSelect2}
+            // cancelCouponSelect={cancelCouponSelect}
           />
         ))}
       </div>

@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 
-export default function CouponDisplay({
-  item,
-  handleCouponSelect2,
-  handleCouponSelect,
-}) {
+export default function CouponDisplay({ item, handleCouponSelect }) {
   const [isSelect, setIsSelect] = useState(false)
 
   const selectclass = isSelect ? 's-coupon-used-show' : ''

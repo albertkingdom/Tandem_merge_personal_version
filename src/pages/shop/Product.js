@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { withRouter, NavLink, Switch, Route, Link } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 import Config from './Config'
-
 import CommentList from './CommentList'
 import Recommend from './Recommend'
 import {
@@ -22,8 +22,17 @@ import {
   cancelAzenToDatabase,
   updateCartToLocalStorage,
 } from '../../components/shop/Functions/Function'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
+import {
+  getAzenListfromStorage,
+  addAzenIdToRedux,
+  removeAzenIdFromRedux,
+} from '../../actions/SazenActions'
+import { increaseCartCount } from '../../actions/ScartActions'
 
 function Product(props) {
+  const isLogin = useLoginStatus() //custom hook
+
   const [myproduct, setMyproduct] = useState([])
   const [configORcomment, setCofigORcomment] = useState(1) //1:建議配備, 2:留言板
   const [whoAzen, setWhoAzen] = useState('') //記錄此商品被那些mbId收藏，從商品database撈出的資料
@@ -32,8 +41,16 @@ function Product(props) {
 
   const [photoIndex, setPhotoIndex] = useState(0) //lightbox
   const [isOpen, setIsOpen] = useState(false) //lightbox
-  const [mbAzen_arr_state, setMbAzen_arr_state] = useState([]) //按讚顯示
+  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([]) //按讚顯示
   const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
+
+  const dispatch = useDispatch()
+  //user按讚相關
+  const reduxAzenList = useSelector(state => state.SuserAzen.list)
+  const reduxAzenStatus = useSelector(
+    state => state.SuserAzen.isGetDataFromStorage
+  )
+
   let productId = props.match.params.id
 
   useEffect(() => {
@@ -58,25 +75,15 @@ function Product(props) {
     getDataFromServer()
   }, [productId])
 
-  //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem('LoginUserData')) !== null) {
-      if (localStorage.getItem('Azen') == null) {
-        let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-          .mbAzen
-        mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-        let mbAzen_arr = mbAzen_str.split(',')
-        // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-        localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-        setMbAzen_arr_state(mbAzen_arr)
-      } else {
-        const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-        setMbAzen_arr_state(currentLocalAzen)
+    //確認redux內有無按讚清單
+    if (isLogin) {
+      if (!reduxAzenStatus) {
+        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+        dispatch(getAzenListfromStorage())
       }
-    } else {
-      localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
     }
-  }, [])
+  }, [dispatch, isLogin, reduxAzenStatus])
   //點商品小圖=>展示大圖
   function clickTochangePic(e) {
     // console.log('this is',e)
@@ -211,14 +218,12 @@ function Product(props) {
           <h3>{myproduct.itemName}</h3>
           <p style={{ minHeight: '150px' }}>{myproduct.itemIntro}</p>
           <div className="row">
-            {mbAzen_arr_state.indexOf(`${myproduct.itemId}`) === -1 ? (
+            {reduxAzenList.indexOf(`${myproduct.itemId}`) === -1 ? (
               <button
                 type="button"
                 className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
                 onClick={() => {
-                  if (
-                    JSON.parse(localStorage.getItem('LoginUserData')) !== null
-                  ) {
+                  if (isLogin) {
                     addAzenToDatabase({
                       userId: JSON.parse(localStorage.getItem('LoginUserData'))
                         .mbId,
@@ -226,10 +231,7 @@ function Product(props) {
                     })
                     setMbLikeThisProduct(true)
                     updateAzenToLocalStorage(myproduct.itemId)
-                    setMbAzen_arr_state(prevazenlist => [
-                      ...prevazenlist,
-                      `${myproduct.itemId}`,
-                    ])
+                    dispatch(addAzenIdToRedux(myproduct.itemId))
                   } else {
                     Swal.fire('請先登入!')
                   }
@@ -253,9 +255,8 @@ function Product(props) {
                       .mbId,
                     unlikeproductId: myproduct.itemId,
                   })
-                  setMbAzen_arr_state(prevazenlist =>
-                    prevazenlist.filter(id => id !== `${myproduct.itemId}`)
-                  )
+
+                  dispatch(removeAzenIdFromRedux(myproduct.itemId))
                 }}
               >
                 <AiFillHeart style={{ color: '#F9A451', fontSize: '24px' }} />
@@ -265,7 +266,7 @@ function Product(props) {
             <button
               type="button"
               className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
-              onClick={() =>
+              onClick={() => {
                 updateCartToLocalStorage({
                   id: myproduct.itemId,
                   name: myproduct.itemName,
@@ -273,7 +274,8 @@ function Product(props) {
                   price: myproduct.itemPrice,
                   img: myproduct.itemImg,
                 })
-              }
+                dispatch(increaseCartCount(myproduct.itemId))
+              }}
             >
               <AiOutlineShoppingCart
                 style={{ color: '#F9A451', fontSize: '24px' }}
