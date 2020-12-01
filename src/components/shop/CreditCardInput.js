@@ -41,7 +41,14 @@ export default function CreditCardInput({ checkCardNumber }) {
       }
     }
     validation()
-  }, [numberPart2, numberPart3, numberPart4, numberPart1, cardnumberLength])
+  }, [
+    numberPart2,
+    numberPart3,
+    numberPart4,
+    numberPart1,
+    cardnumberLength,
+    checkCardNumber,
+  ])
   return (
     <>
       <div className="form-group row pl-2">

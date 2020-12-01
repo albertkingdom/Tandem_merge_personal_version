@@ -1,5 +1,6 @@
 import React from 'react'
 import CouponDisplay from './CouponDisplay'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 
 function CouponDisplayList({
   coupon,
@@ -8,9 +9,10 @@ function CouponDisplayList({
   handleCouponSelect,
   cancelCouponSelect,
 }) {
+  const isLogin = useLoginStatus()
   return (
     <div className="s-couponList p-4">
-      {JSON.parse(localStorage.getItem('LoginUserData')) !== null ? (
+      {isLogin ? (
         <>
           <h5>你有{coupon.length}張折價券可使用</h5>
           <h5>已選 {isSelectCoupon === true ? '1' : '0'}張</h5>

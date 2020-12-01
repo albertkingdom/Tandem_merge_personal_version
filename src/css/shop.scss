@@ -298,6 +298,9 @@ h6 {
 //Filterbar
 .s-filterbar {
   height: 45px;
+  option {
+    cursor: pointer;
+  }
 }
 .s-filterbar-btn {
   border-radius: 25px;

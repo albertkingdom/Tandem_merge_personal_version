@@ -20,7 +20,6 @@ function ProductList(props) {
   const [vendor, setVendor] = useState('V000')
   const [price, setPrice] = useState(9999)
   const [orderBy, setOrderBy] = useState('itemId')
-  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([])
 
   // const searchParams = new URLSearchParams(props.location.search)
 
@@ -28,36 +27,38 @@ function ProductList(props) {
     //fetch database product撈所有資料(有分類)
     async function getClassifiedDataFromServer(page) {
       let request = undefined
-
-      //新分頁方法
-      if (type !== 0 || vendor !== 'V000' || price !== '') {
-        request = new Request(
-          'http://localhost:6001/product/search/' +
-            type +
-            '/' +
-            vendor +
-            '/' +
-            price +
-            '/' +
-            orderBy +
-            '/' +
-            currentpage,
-          {
+      try {
+        if (type !== 0 || vendor !== 'V000' || price !== 9999) {
+          request = new Request(
+            'http://localhost:6001/product/search/' +
+              type +
+              '/' +
+              vendor +
+              '/' +
+              price +
+              '/' +
+              orderBy +
+              '/' +
+              currentpage,
+            {
+              method: 'GET',
+              credentials: 'include',
+            }
+          )
+        } else {
+          request = new Request('http://localhost:6001/product/list/' + page, {
             method: 'GET',
             credentials: 'include',
-          }
-        )
-      } else {
-        request = new Request('http://localhost:6001/product/list/' + page, {
-          method: 'GET',
-          credentials: 'include',
-        })
-      }
-      const response = await fetch(request)
-      const data = await response.json()
+          })
+        }
+        const response = await fetch(request)
+        const data = await response.json()
 
-      setMyproduct(data.rows)
-      setTotalpage(data.totalPages)
+        setMyproduct(data.rows)
+        setTotalpage(data.totalPages)
+      } catch (error) {
+        console.log(error)
+      }
 
       // console.log(data.rows)
     }
@@ -74,28 +75,6 @@ function ProductList(props) {
     setCurrentpage(1)
   }
 
-  // useEffect(() => {
-  //   //一開始複製一份LoginUserData的Azen，set到Local的Azen值、setMbAzen_arr_state
-  //   const CopyAzenListToLocal = () => {
-  //     if (isLogin) {
-  //       if (localStorage.getItem('Azen') == null) {
-  //         let mbAzen_str = JSON.parse(localStorage.getItem('LoginUserData'))
-  //           .mbAzen
-  //         mbAzen_str = mbAzen_str.replace('[', '').replace(']', '')
-  //         let mbAzen_arr = mbAzen_str.split(',')
-  //         // const currentLocalAzen = JSON.parse(localStorage.getItem('Azen')) || []
-  //         localStorage.setItem('Azen', JSON.stringify(mbAzen_arr))
-  //         setMbAzen_arr_state(mbAzen_arr)
-  //       } else {
-  //         const currentLocalAzen = JSON.parse(localStorage.getItem('Azen'))
-  //         setMbAzen_arr_state(currentLocalAzen)
-  //       }
-  //     } else {
-  //       localStorage.removeItem('Azen') //如果登出就刪掉localstorage Azen
-  //     }
-  //   }
-  //   CopyAzenListToLocal()
-  // }, [isLogin])
   const reduxAzenStatus = useSelector(
     state => state.SuserAzen.isGetDataFromStorage
   )
