@@ -19,7 +19,9 @@ export const zeroCartCount = () => {
 }
 //從localstorage取得cart
 export const getCartCountFromStorage = () => {
-  let localCart = JSON.parse(localStorage.getItem('cart'))
+  let localCart = localStorage.getItem('cart')
+    ? JSON.parse(localStorage.getItem('cart'))
+    : []
   return {
     type: actionTypes.getCartFromStorage,
     payload: { length: localCart.length, list: localCart.map(item => item.id) },
