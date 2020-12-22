@@ -31,12 +31,16 @@ export async function addAzenToDatabase(value) {
       'Content-Type': 'application/json',
     }),
   })
-  const response = await fetch(request)
-  const data = await response.json()
+  try {
+    const response = await fetch(request)
+    const data = await response.json()
 
-  console.log('加入收藏', data)
-  if (data.r.affectedRows === 1) {
-    Swal.fire('商品成功加入收藏!')
+    // console.log('加入收藏', data)
+    if (data.r.affectedRows === 1) {
+      Swal.fire('商品成功加入收藏!')
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -51,12 +55,16 @@ export async function cancelAzenToDatabase(value) {
       'Content-Type': 'application/json',
     }),
   })
-  const response = await fetch(request)
-  const data = await response.json()
+  try {
+    const response = await fetch(request)
+    const data = await response.json()
 
-  console.log('移除收藏', data)
-  if (data.r.affectedRows === 1) {
-    Swal.fire('商品成功移出收藏!')
+    // console.log('移除收藏', data)
+    if (data.r.affectedRows === 1) {
+      Swal.fire('商品成功移出收藏!')
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 

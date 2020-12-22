@@ -8,14 +8,13 @@ import PayProgressbar from '../../components/shop/PayProgessbar'
 
 import CouponDisplayList from './CouponDisplayList'
 import HistoryDisplay from './HistoryDisplay'
-import Loading from '../../components/shop/Loading'
 import ShoppingCartItem from '../../components/shop/ShoppingCartItem'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 //action creator
 import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ShoppingCart(props) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
   const [mycartDisplay, setMycartDisplay] = useState([])
 
   const [isSelectCoupon, setIsSelectCoupon] = useState(false)
@@ -145,11 +144,6 @@ function ShoppingCart(props) {
     gethistoryfromlocalstorage()
   }, [])
 
-  function updateMyCartDisplay() {
-    let newcart = JSON.parse(localStorage.getItem('cart'))
-    setMycartDisplay(newcart)
-  }
-
   const display = (
     <>
       <PayProgressbar />
@@ -275,7 +269,7 @@ function ShoppingCart(props) {
           ) : (
             <HistoryDisplay
               browsehistory={browsehistory}
-              updateMyCartDisplay={updateMyCartDisplay}
+              updateMyCartDisplay={getCartFromLocalStorage}
             />
           )}
         </div>

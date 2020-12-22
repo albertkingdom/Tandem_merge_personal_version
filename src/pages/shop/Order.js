@@ -20,16 +20,17 @@ function Order(props) {
         }),
       })
       const response = await fetch(request)
-      const data = await response.json()
-      setOrderInfo(data)
-      setProductId(data[0].itemId)
+      const { result, itemNames } = await response.json()
+      // console.log(result, itemNames)
+      setOrderInfo(result)
+      setProductId(result[0].itemId)
+      setProductName(itemNames)
     }
     getOrderInfo()
     //取得訂單內的商品名稱
-    const localStorageProductName = JSON.parse(
-      localStorage.getItem('cart')
-    ).map(item => item.name)
-    setProductName(localStorageProductName)
+    // const localStorageProductName = JSON.parse(
+    //   localStorage.getItem('cart')
+    // ).map(item => item.name)
   }, [])
 
   //寄訂單成立通知信
@@ -124,8 +125,8 @@ function Order(props) {
             <div className="col-sm-5 my-2">
               {productName.map((item, index) => {
                 return (
-                  <p key={item}>
-                    ({index + 1}) {item}
+                  <p key={item.itemName}>
+                    ({index + 1}) {item.itemName}
                   </p>
                 )
               })}
@@ -141,7 +142,6 @@ function Order(props) {
           onClick={() => {
             // sendOrderEmail()
             props.history.push('/productlist')
-            localStorage.removeItem('cart')
           }}
         >
           完成訂單

@@ -18,18 +18,22 @@ function Filterbar({
       //如果和500ms前的Input內容一樣，表示使用者沒有再繼續打字，就送出request
       if (search_query === inputRef.current.value) {
         async function Search() {
-          const request = new Request(
-            'http://localhost:6001/product/?search=' + search_query,
-            {
-              method: 'GET',
-              credentials: 'include',
-            }
-          )
-          const response = await fetch(request)
-          const data = await response.json()
+          try {
+            const request = new Request(
+              'http://localhost:6001/product/?search=' + search_query,
+              {
+                method: 'GET',
+                credentials: 'include',
+              }
+            )
+            const response = await fetch(request)
+            const data = await response.json()
 
-          setMyproduct(data.rows)
-          setTotalpage(data.totalPages)
+            setMyproduct(data.rows)
+            setTotalpage(data.totalPages)
+          } catch (error) {
+            console.log(error)
+          }
         }
         Search()
       }
@@ -52,10 +56,7 @@ function Filterbar({
             value={search_query}
             onChange={event => setSearch_query(event.target.value)}
           />
-          <Link
-            className="s-searchicon"
-            to={`/productlist/?search=${search_query}`}
-          >
+          <Link className="s-searchicon" to="#">
             <AiOutlineSearch style={{ fontSize: '24px', marginTop: '10px' }} />
           </Link>
         </div>
@@ -69,34 +70,21 @@ function Filterbar({
           >
             價格區間
           </button>
-          <div className="dropdown-menu">
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => {
-                setPrice('<100')
-              }}
-            >
+          <div
+            className="dropdown-menu"
+            onClick={e => {
+              setPrice(e.target.value)
+            }}
+          >
+            <option className="dropdown-item" value="<100">
               Under NT$100
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => {
-                setPrice('<500')
-              }}
-            >
+            </option>
+            <option className="dropdown-item" value="<500">
               Under NT$500
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => {
-                setPrice('<1000')
-              }}
-            >
+            </option>
+            <option className="dropdown-item" value="<1000">
               Under NT$1000
-            </Link>
+            </option>
           </div>
         </div>
         <div className="col col-sm-6 col-lg-2 s-filterbar">
@@ -109,77 +97,40 @@ function Filterbar({
           >
             發行商
           </button>
-          <div className="dropdown-menu">
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V001')}
-            >
+          <div
+            className="dropdown-menu"
+            onClick={e => setVendor(e.target.value)}
+          >
+            <option className="dropdown-item" value="V001">
               美國藝電（ElectronicArts）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V002')}
-            >
+            </option>
+            <option className="dropdown-item" value="V002">
               動視暴雪（Activision Blizzard）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V003')}
-            >
+            </option>
+            <option className="dropdown-item" value="V003">
               2K Games
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V004')}
-            >
+            </option>
+            <option className="dropdown-item" value="V004">
               任天堂（NINTENDO）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V005')}
-            >
+            </option>
+            <option className="dropdown-item" value="V005">
               索尼（SONY）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V006')}
-            >
+            </option>
+            <option className="dropdown-item" value="V006">
               育碧（Ubisoft）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V007')}
-            >
+            </option>
+            <option className="dropdown-item" value="V007">
               柯樂美（KONAMI）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V008')}
-            >
+            </option>
+            <option className="dropdown-item" value="V008">
               卡普空（CAPCOM）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V009')}
-            >
+            </option>
+            <option className="dropdown-item" value="V009">
               史克威爾艾尼克斯（SQUARE ENIX）
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setVendor('V010')}
-            >
+            </option>
+            <option className="dropdown-item" value="V010">
               世嘉（SEGA）
-            </Link>
+            </option>
           </div>
         </div>
 
@@ -193,42 +144,25 @@ function Filterbar({
           >
             排序方式
           </button>
-          <div className="dropdown-menu">
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setOrderBy('itemName ASC')}
-            >
+          <div
+            className="dropdown-menu"
+            onClick={e => setOrderBy(e.target.value)}
+          >
+            <option className="dropdown-item" value="itemName ASC">
               遊戲名稱
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setOrderBy('itemPrice DESC')}
-            >
+            </option>
+            <option className="dropdown-item" value="itemPrice DESC">
               價錢高至低
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setOrderBy('itemPrice ASC')}
-            >
+            </option>
+            <option className="dropdown-item" value="itemPrice ASC">
               價錢低至高
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setOrderBy('itemDate ASC')}
-            >
+            </option>
+            <option className="dropdown-item" value="itemDate ASC">
               推出時間最早
-            </Link>
-            <Link
-              className="dropdown-item"
-              to="#"
-              onClick={() => setOrderBy('itemDate DESC')}
-            >
+            </option>
+            <option className="dropdown-item" value="itemDate DESC">
               推出時間最新
-            </Link>
+            </option>
           </div>
         </div>
       </div>

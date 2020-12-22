@@ -236,13 +236,12 @@ h6 {
 .s-slider-box {
   width: 100%;
   min-height: 75vh;
-  background-image: url('/images/shop/bigImage/1_MONSTER HUNTER_ WORLD_0.jpg');
+  // background-image: url('/images/shop/bigImage/1_MONSTER HUNTER_ WORLD_0.jpg');
   background-size: cover;
   background-repeat: no-repeat;
   filter: grayscale(50%);
-  transition: 2s;
+  transition: background-image 0.5s ease-in-out;
 
-  flex-wrap: wrap;
 }
 
 .sbox {
@@ -284,9 +283,7 @@ h6 {
       opacity: 50%;
   
   } */
-.s-slider-box {
-  transition: background-image 0.5s ease-in-out;
-}
+
 .s-slider-box:hover .sbox-s {
   /* width: 80%;
     height: 70%; */
@@ -298,6 +295,9 @@ h6 {
 //Filterbar
 .s-filterbar {
   height: 45px;
+  option {
+    cursor: pointer;
+  }
 }
 .s-filterbar-btn {
   border-radius: 25px;
@@ -601,11 +601,7 @@ h6 {
   }
 }
 
-.s-totalprice-fix {
-  // @extend .s-totalprice;
-  // position: relative;
-  // bottom: 300px;
-}
+
 
 .s-card {
   border: 1px solid gray;
@@ -660,4 +656,13 @@ button.section-select {
   &.active {
     border-bottom: 2px solid #79cee2;
   }
+}
+
+//TapPay
+.tpfield {
+  height: 40px;
+  width: 300px;
+  // border: 1px solid gray;
+  margin: 5px 0;
+  // padding: 5px;
 }

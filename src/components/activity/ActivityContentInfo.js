@@ -113,7 +113,7 @@ function ActivityContentInfo(props) {
   }
 
   //點選判斷
-  $('.aBook').click(function () {
+  $('.aBook').click(function() {
     if (loginStatus) {
       if (book) {
         setBook(false)
@@ -163,7 +163,7 @@ function ActivityContentInfo(props) {
   //     })
   //   }
   // })
-  $('.aLike').click(function () {
+  $('.aLike').click(function() {
     if (loginStatus) {
       if (like) {
         aSetBFL()

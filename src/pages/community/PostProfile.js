@@ -500,9 +500,7 @@ function PostProfile(props) {
 
     return (
       <>
-        {/* <div className="container">
-          <h1>null</h1>
-        </div> */}
+        {/* <div className="container">          <h1>null</h1>        </div> */}
       </>
     )
   } else {

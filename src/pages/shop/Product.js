@@ -12,7 +12,7 @@ import {
 } from 'react-icons/ai'
 import '../../css/shop.scss'
 import Swal from 'sweetalert2' //sweetalert2
-import $ from 'jquery'
+
 import Lightbox from 'react-image-lightbox' //lightbox
 import 'react-image-lightbox/style.css' //lightbox
 
@@ -31,17 +31,13 @@ import {
 import { increaseCartCount } from '../../actions/ScartActions'
 
 function Product(props) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
 
   const [myproduct, setMyproduct] = useState([])
   const [configORcomment, setCofigORcomment] = useState(1) //1:建議配備, 2:留言板
   const [whoAzen, setWhoAzen] = useState('') //記錄此商品被那些mbId收藏，從商品database撈出的資料
-
-  const [mbLikeThisProduct, setMbLikeThisProduct] = useState(false)
-
   const [photoIndex, setPhotoIndex] = useState(0) //lightbox
   const [isOpen, setIsOpen] = useState(false) //lightbox
-  // const [mbAzen_arr_state, setMbAzen_arr_state] = useState([]) //按讚顯示
   const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
 
   const dispatch = useDispatch()
@@ -56,19 +52,22 @@ function Product(props) {
   useEffect(() => {
     //fetch database product撈所有資料(不分類)
     async function getDataFromServer() {
-      const request = new Request(
-        'http://localhost:6001/product/' + productId,
-        {
-          method: 'GET',
-          credentials: 'include',
-        }
-      )
-      const response = await fetch(request)
-      const data = await response.json()
+      try {
+        const request = new Request(
+          'http://localhost:6001/product/' + productId,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        )
+        const response = await fetch(request)
+        const data = await response.json()
 
-      setMyproduct(data.rows[0])
-
-      setWhoAzen(JSON.parse(data.rows[0].memberFavoriteId))
+        setMyproduct(data.rows[0])
+        setWhoAzen(JSON.parse(data.rows[0].memberFavoriteId))
+      } catch (error) {
+        console.log(error)
+      }
 
       // console.log(data.rows)
     }
@@ -93,17 +92,6 @@ function Product(props) {
     // e.style.border = '1px solid orange'
     // console.log($(e))
   }
-  //點到的小圖加上邊框
-  // useEffect(() => {
-  //   $('.s-smallImg li img').click(function() {
-  //     $(this)
-  //       .css('border', '2px solid orange')
-  //       .parent('li')
-  //       .siblings()
-  //       .children()
-  //       .css('border', '0px')
-  //   })
-  // }, [])
 
   useEffect(() => {
     //處理小圖檔名，組合成大圖檔名
@@ -229,7 +217,6 @@ function Product(props) {
                         .mbId,
                       likeproductId: myproduct.itemId,
                     })
-                    setMbLikeThisProduct(true)
                     updateAzenToLocalStorage(myproduct.itemId)
                     dispatch(addAzenIdToRedux(myproduct.itemId))
                   } else {
@@ -249,7 +236,6 @@ function Product(props) {
                 style={{ backgroundColor: '#79cee2', color: 'white' }}
                 onClick={() => {
                   updateAzenToLocalStorage(myproduct.itemId)
-                  setMbLikeThisProduct(false)
                   cancelAzenToDatabase({
                     userId: JSON.parse(localStorage.getItem('LoginUserData'))
                       .mbId,

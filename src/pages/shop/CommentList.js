@@ -9,10 +9,9 @@ import Swal from 'sweetalert2' //sweetalert2
 import NewCommentContent from '../../components/shop/NewCommentContent'
 import OldCommentContent from '../../components/shop/OldCommentContent'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
-
 function CommentList(props) {
   // console.log(props.leaveComment)
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
 
   //發表留言
   // const [commentContent, setCommentContent] = useState('')
@@ -55,22 +54,26 @@ function CommentList(props) {
 
   //抓舊留言的function, set到OldCommentContent
   async function getOldCommentAsync(productId) {
-    const request = new Request(
-      // 'http://localhost:5555/comments/?itemId='+productId,
-      'http://localhost:6001/product/comment/' + productId,
-      {
-        method: 'GET',
+    try {
+      const request = new Request(
+        // 'http://localhost:5555/comments/?itemId='+productId,
+        'http://localhost:6001/product/comment/' + productId,
+        {
+          method: 'GET',
 
-        headers: new Headers({
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        }),
-      }
-    )
-    const response = await fetch(request)
-    const data = await response.json()
-    // console.log('res data', data)
-    setOldCommentContent(data.result)
+          headers: new Headers({
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }),
+        }
+      )
+      const response = await fetch(request)
+      const data = await response.json()
+      // console.log('res data', data)
+      setOldCommentContent(data.result)
+    } catch (error) {
+      console.log(error)
+    }
   }
   const productId = props.productId //取得商品id，當作參數
   useEffect(() => {
@@ -79,7 +82,7 @@ function CommentList(props) {
 
   //刪除留言功能
   function handleDelMsg(msgID) {
-    console.log(msgID)
+    // console.log(msgID)
     Swal.fire({
       title: '確定要刪除此留言?',
       text: "You won't be able to revert this!",
@@ -100,13 +103,14 @@ function CommentList(props) {
         })
           .then(res => res.json())
           .then(data => {
-            console.log(data)
+            // console.log(data)
             if (data.result.affectedRows === 1) {
               Swal.fire('成功刪除!').then(result => {
                 getOldCommentAsync(productId)
               })
             }
           })
+          .catch(error => console.log(error))
       }
     })
   }
@@ -146,29 +150,20 @@ function CommentList(props) {
             getOldCommentAsync(productId)
           }
         })
+        .catch(error => console.log(error))
     }
   }
-  // const toSetRating = value => {
-  //   setRating(value)
-  // }
-  // const toSetCommentContent = value => {
-  //   setCommentContent(value)
-  // }
+
   const comment = (
     <>
       <div className="container">
         <NewCommentContent
-          // toSetRating={toSetRating}
-          // rating={rating}
-          // toSetCommentContent={toSetCommentContent}
-          // commentContent={commentContent}
           handleSubmit={handleSubmit}
           avatorImgSrc={
             isLogin
               ? JSON.parse(localStorage.getItem('LoginUserData')).mbAva
               : null
           }
-          // msgCreatedAt={null}
           isOldComment={false}
         />
         {oldCommentContent.map(msg => (
@@ -178,7 +173,6 @@ function CommentList(props) {
             handleDelMsg={handleDelMsg}
             msg={msg}
             handleSubmit={handleSubmit}
-            // toSetCommentContent={toSetCommentContent}
             oldCommentContent={oldCommentContent}
             isLogin={isLogin}
           />
