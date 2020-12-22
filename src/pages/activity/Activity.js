@@ -132,7 +132,7 @@ function Activity(props) {
   }
 
   //偵測捲軸狀態設定新增活動按鈕位置
-  $(window).scroll(function () {
+  $(window).scroll(function() {
     let scrollTop = $(this).scrollTop()
     if (scrollTop >= '100') {
       $('.aAddActivity').addClass('active')

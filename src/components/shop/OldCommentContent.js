@@ -8,6 +8,7 @@ import {
 } from 'react-icons/ai'
 import ReplyComment from './ReplyComment'
 import InnerOldComment from './InnerOldComment'
+import StarList from './Star/StarList'
 
 function OldCommentContent({
   handleEditMsg,
@@ -73,13 +74,14 @@ function OldCommentContent({
                     <strong>{msg.mbNick}</strong>
                   </a>
 
-                  <span className="float-right col-md-3 row mx-2 py-2">
+                  {/* <span className="float-right col-md-3 row mx-2 py-2">
                     {msg.rating}
                     <AiTwotoneStar
                       className="text-warning"
                       style={{ fontSize: '20px' }}
                     />
-                  </span>
+                  </span> */}
+                  <StarList fullCount={msg.rating} />
                 </p>
                 <div className="clearfix"></div>
                 <form>

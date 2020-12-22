@@ -19,7 +19,7 @@ import {
 import { decreaseCartCount } from '../../actions/ScartActions'
 
 export default function ShoppingCartItem({ value, delProductFromCart }) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
   //redux
   const reduxAzenList = useSelector(state => state.SuserAzen.list)
   const dispatch = useDispatch()

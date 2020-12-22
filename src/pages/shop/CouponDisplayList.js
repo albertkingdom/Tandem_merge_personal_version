@@ -9,7 +9,7 @@ function CouponDisplayList({
   handleCouponSelect,
   cancelCouponSelect,
 }) {
-  const isLogin = useLoginStatus()
+  const { isLogin } = useLoginStatus()
   return (
     <div className="s-couponList p-4">
       {isLogin ? (

@@ -9,10 +9,9 @@ import Swal from 'sweetalert2' //sweetalert2
 import NewCommentContent from '../../components/shop/NewCommentContent'
 import OldCommentContent from '../../components/shop/OldCommentContent'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
-
 function CommentList(props) {
   // console.log(props.leaveComment)
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
 
   //發表留言
   // const [commentContent, setCommentContent] = useState('')

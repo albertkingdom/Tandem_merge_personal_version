@@ -1,22 +1,30 @@
 import React from 'react'
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
+import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 
 function InnerOldComment({ handleDelMsg, handleEditMsg, innermsg }) {
+  const { isLogin, loginId } = useLoginStatus()
+
   return (
     <div className="s-card card-inner">
       <div className="card-body position-relative">
-        <button
-          className="s-comment-del-btn"
-          onClick={() => handleDelMsg(innermsg.id)}
-        >
-          <AiOutlineDelete />
-        </button>
-        <button
-          className="s-comment-edit-btn"
-          onClick={() => handleEditMsg(innermsg.id)}
-        >
-          <AiOutlineEdit />
-        </button>
+        {/* 有登入且是留言主人才能看到按鈕 */}
+        {isLogin && loginId === innermsg.mbId ? (
+          <>
+            <button
+              className="s-comment-del-btn"
+              onClick={() => handleDelMsg(innermsg.id)}
+            >
+              <AiOutlineDelete />
+            </button>
+            <button
+              className="s-comment-edit-btn"
+              onClick={() => handleEditMsg(innermsg.id)}
+            >
+              <AiOutlineEdit />
+            </button>
+          </>
+        ) : null}
         <div className="row">
           <div className="col-5 col-md-2">
             <img

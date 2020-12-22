@@ -89,7 +89,7 @@ function ActivityAddNew(props) {
     } else {
       setLoginStatus(false)
       // console.log('NO')
-      Swal.fire({ title: '請先登入喲！', icon: 'warning' }).then(function (r) {
+      Swal.fire({ title: '請先登入喲！', icon: 'warning' }).then(function(r) {
         history.push('/login')
       })
     }
@@ -221,7 +221,7 @@ function ActivityAddNew(props) {
     const response = await fetch(request)
     const data = await response.json()
 
-    Swal.fire({ title: '新增成功', icon: 'success' }).then(function (r) {
+    Swal.fire({ title: '新增成功', icon: 'success' }).then(function(r) {
       history.push('/activity')
     })
   }

@@ -14,7 +14,7 @@ import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ShoppingCart(props) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
   const [mycartDisplay, setMycartDisplay] = useState([])
 
   const [isSelectCoupon, setIsSelectCoupon] = useState(false)

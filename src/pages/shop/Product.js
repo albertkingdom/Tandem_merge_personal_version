@@ -31,7 +31,7 @@ import {
 import { increaseCartCount } from '../../actions/ScartActions'
 
 function Product(props) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
 
   const [myproduct, setMyproduct] = useState([])
   const [configORcomment, setCofigORcomment] = useState(1) //1:建議配備, 2:留言板

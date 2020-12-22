@@ -12,7 +12,7 @@ import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ProductList(props) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
   const [myproduct, setMyproduct] = useState([])
   const [type, setType] = useState(0)
   const [totalpage, setTotalpage] = useState(0)

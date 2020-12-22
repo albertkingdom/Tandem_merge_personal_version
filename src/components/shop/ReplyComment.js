@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useLoginStatus from './customHook/useLoginStatus'
 
 function ReplyComment({ handleSubmit, toggleShowReply, parentId }) {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
 
   const [commentContent, setCommentContent] = useState('')
 

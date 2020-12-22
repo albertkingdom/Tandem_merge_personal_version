@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { AiTwotoneStar } from 'react-icons/ai'
+
 import useLoginStatus from './customHook/useLoginStatus'
+import GiveStarRating from '../shop/Star/GiveStarRating'
 
 const NewCommentContent = ({ handleSubmit, avatorImgSrc }) => {
-  const isLogin = useLoginStatus() //custom hook
+  const { isLogin } = useLoginStatus() //custom hook
   const [commentContent, setCommentContent] = useState('')
   const [rating, setRating] = useState(0)
   return (
@@ -20,7 +21,6 @@ const NewCommentContent = ({ handleSubmit, avatorImgSrc }) => {
             ) : (
               <img src={`/images/shop/avator_empty.jpg`} alt="..." />
             )}
-            {/* <p className="text-secondary text-center">{msgCreatedAt}</p> */}
           </div>
           <div className="col-7 col-md-10">
             <p className="row">
@@ -28,7 +28,6 @@ const NewCommentContent = ({ handleSubmit, avatorImgSrc }) => {
                 <input
                   className="form-control-plaintext col-5"
                   type="text"
-                  // placeholder="請輸入暱稱"
                   defaultValue={
                     isLogin
                       ? JSON.parse(localStorage.getItem('LoginUserData')).mbNick
@@ -36,20 +35,12 @@ const NewCommentContent = ({ handleSubmit, avatorImgSrc }) => {
                   }
                 ></input>
               </strong>
-              <span className="float-right col-md-3 row mx-2 py-2">
+              <span className="col-md-3 row mx-2 py-2">
                 <span>請給評分: </span>
-                <input
-                  className="form-control"
-                  type="number"
-                  style={{ width: '60px' }}
-                  min="0"
-                  max="5"
-                  onChange={e => setRating(e.target.value)}
-                  value={rating}
-                ></input>
-                <AiTwotoneStar
-                  className="text-warning"
-                  style={{ fontSize: '20px' }}
+
+                <GiveStarRating
+                  toSetRating={value => setRating(value)}
+                  rating={rating}
                 />
               </span>
             </p>
