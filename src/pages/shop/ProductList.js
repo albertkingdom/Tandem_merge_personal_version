@@ -13,7 +13,7 @@ import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ProductList(props) {
   const { isLogin } = useLoginStatus() //custom hook
-  const [myproduct, setMyproduct] = useState([])
+  const [productListArray, setProductListArray] = useState([])
   const [type, setType] = useState(0)
   const [totalpage, setTotalpage] = useState(0)
   const [currentpage, setCurrentpage] = useState(1)
@@ -26,35 +26,24 @@ function ProductList(props) {
   useEffect(() => {
     //fetch database product撈所有資料(有分類)
     async function getClassifiedDataFromServer(page) {
-      let request = undefined
+      let request
       try {
         if (type !== 0 || vendor !== 'V000' || price !== 9999) {
           request = new Request(
-            'http://localhost:6001/product/search/' +
-              type +
-              '/' +
-              vendor +
-              '/' +
-              price +
-              '/' +
-              orderBy +
-              '/' +
-              currentpage,
+            `http://localhost:6001/product/search/${type}/${vendor}/${price}/${orderBy}/${currentpage}`,
             {
               method: 'GET',
-              credentials: 'include',
             }
           )
         } else {
           request = new Request('http://localhost:6001/product/list/' + page, {
             method: 'GET',
-            credentials: 'include',
           })
         }
         const response = await fetch(request)
         const data = await response.json()
 
-        setMyproduct(data.rows)
+        setProductListArray(data.rows)
         setTotalpage(data.totalPages)
       } catch (error) {
         console.log(error)
@@ -82,17 +71,15 @@ function ProductList(props) {
   const dispatch = useDispatch()
   useEffect(() => {
     //確認redux內有無按讚清單
-    if (isLogin) {
-      if (!reduxAzenStatus) {
-        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
-        dispatch(getAzenListfromStorage())
-      }
+    if (isLogin && !reduxAzenStatus) {
+      //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+      dispatch(getAzenListfromStorage())
     }
   }, [dispatch, isLogin, reduxAzenStatus])
   const main = (
     <>
       <div className="row">
-        {myproduct.map(value => (
+        {productListArray.map(value => (
           <ProductListItem key={value.itemId} value={value} isLogin={isLogin} />
         ))}
       </div>
@@ -115,7 +102,7 @@ function ProductList(props) {
           setOrderBy={setOrderBy}
         />
         <Filterbar
-          setMyproduct={setMyproduct}
+          setMyproduct={setProductListArray}
           setTotalpage={setTotalpage}
           setVendor={setVendor}
           setPrice={setPrice}

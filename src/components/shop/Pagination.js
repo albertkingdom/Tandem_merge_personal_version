@@ -1,12 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { AiOutlineCaretLeft, AiOutlineCaretRight } from 'react-icons/ai'
+
 function Pagination({ totalpage, paginate, currentpage }) {
   //創造頁數list
-  let pageNumbers = []
-  for (let i = 1; i <= totalpage; i++) {
-    pageNumbers.push(i)
-  }
+
+  const pageNumbers = Array.from({ length: totalpage }, (_, i) => i + 1)
   return (
     <>
       <div className="row my-3">
@@ -26,10 +25,9 @@ function Pagination({ totalpage, paginate, currentpage }) {
               return (
                 <li
                   key={index}
-                  className={
-                    's-pageItem ' +
-                    (number === currentpage ? 's-pageItem-Active' : '')
-                  }
+                  className={`s-pageItem ${
+                    number === currentpage ? 's-pageItem-Active' : ''
+                  }`}
                 >
                   <Link
                     className=""

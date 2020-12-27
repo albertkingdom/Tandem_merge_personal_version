@@ -1,0 +1,20 @@
+$orange-color: #f9a451;
+.history {
+  width: 100%;
+  overflow: auto;
+  li {
+    margin: 25px;
+    width: 200px;
+    a {
+      width: 200px;
+      background-color: lightgray;
+    }
+  }
+}
+
+.addToCartButton {
+  color: $orange-color;
+  font-size: 24px;
+  z-index: 10;
+  opacity: 1;
+}

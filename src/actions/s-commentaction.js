@@ -7,8 +7,7 @@ export const userLeftMessage = userData => ({
 export const userCommentAsync = (userCommentContent, callback) => {
   return async dispatch => {
     const request = new Request(
-      // 'http://localhost:5555/comments/',
-      'http://localhost:6001/product/comment/' + userCommentContent.itemId,
+      `http://localhost:6001/product/comment/${userCommentContent.itemId}`,
       {
         method: 'POST',
         body: JSON.stringify(userCommentContent),
@@ -27,9 +26,6 @@ export const userCommentAsync = (userCommentContent, callback) => {
 
     dispatch(userLeftMessage(data))
     callback()
-    if (data.length > 0) {
-      console.log('留言成功')
-    }
   }
 }
 

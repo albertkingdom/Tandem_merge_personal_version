@@ -1,0 +1,19 @@
+.button {
+  height: 35px;
+}
+
+.background {
+  position: absolute;
+  background-color: lightgray;
+  border-radius: 15px;
+
+  height: 35px;
+  z-index: -1;
+  transition: left 0.5s;
+}
+.left {
+  left: 0;
+}
+.right {
+  left: 50%;
+}

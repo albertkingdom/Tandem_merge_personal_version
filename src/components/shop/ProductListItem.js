@@ -23,7 +23,27 @@ export default function ProductListItem({ value, isLogin }) {
   const reduxAzenList = useSelector(state => state.SuserAzen.list)
 
   const dispatch = useDispatch()
+  const handleCancelAzen = productId => {
+    updateAzenToLocalStorage(productId)
+    dispatch(removeAzenIdFromRedux(productId))
+    cancelAzenToDatabase({
+      userId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
+      unlikeproductId: productId,
+    })
+  }
+  const handleAzen = productId => {
+    if (isLogin) {
+      addAzenToDatabase({
+        userId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
+        likeproductId: productId,
+      })
+      updateAzenToLocalStorage(productId)
 
+      dispatch(addAzenIdToRedux(productId))
+    } else {
+      Swal.fire('請先登入')
+    }
+  }
   return (
     <div className="col-6 col-lg-4 col-sm-6">
       <div className="s-cardwrap">
@@ -64,25 +84,11 @@ export default function ProductListItem({ value, isLogin }) {
                 />
               </Link>
 
-              {/* <i class="far fa-heart"></i> */}
-              {isLogin && reduxAzenList.indexOf(`${value.itemId}`) !== -1 ? (
+              {/* decide which type of icon to show based on isLogin and if or not exist in reduxAzenList */}
+              {isLogin && reduxAzenList.indexOf(`${value.itemId}`) > 0 ? (
                 <Link
                   className="col-2"
-                  onClick={() => {
-                    if (isLogin) {
-                      updateAzenToLocalStorage(value.itemId)
-
-                      dispatch(removeAzenIdFromRedux(value.itemId))
-                      cancelAzenToDatabase({
-                        userId: JSON.parse(
-                          localStorage.getItem('LoginUserData')
-                        ).mbId,
-                        unlikeproductId: value.itemId,
-                      })
-                    } else {
-                      Swal.fire('請先登入')
-                    }
-                  }}
+                  onClick={() => handleCancelAzen(value.itemId)}
                   to="#"
                 >
                   <AiFillHeart style={{ color: '#F9A451', fontSize: '24px' }} />
@@ -90,21 +96,7 @@ export default function ProductListItem({ value, isLogin }) {
               ) : (
                 <Link
                   className="col-2"
-                  onClick={() => {
-                    if (isLogin) {
-                      addAzenToDatabase({
-                        userId: JSON.parse(
-                          localStorage.getItem('LoginUserData')
-                        ).mbId,
-                        likeproductId: value.itemId,
-                      })
-                      updateAzenToLocalStorage(value.itemId)
-
-                      dispatch(addAzenIdToRedux(value.itemId))
-                    } else {
-                      Swal.fire('請先登入')
-                    }
-                  }}
+                  onClick={() => handleAzen(value.itemId)}
                   to="#"
                 >
                   <AiOutlineHeart

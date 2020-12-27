@@ -115,7 +115,7 @@ function Payment(props) {
       number: {
         // css selector
         element: '#card-number',
-        placeholder: '**** **** **** ****',
+        placeholder: '4242 **** **** ****',
       },
       expirationDate: {
         // DOM object
