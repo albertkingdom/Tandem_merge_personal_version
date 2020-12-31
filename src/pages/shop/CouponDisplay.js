@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styles from './Coupon.module.scss'
 
-export default function CouponDisplay({ item, handleCouponSelect }) {
+export default function CouponDisplay({ item, handleCouponSelect, couponNo }) {
   const [isSelect, setIsSelect] = useState(false)
 
   return (
@@ -22,7 +22,7 @@ export default function CouponDisplay({ item, handleCouponSelect }) {
 
       <div
         className={`img-fluid ${styles['s-coupon-used']} ${
-          isSelect ? styles['s-coupon-used-show'] : ''
+          couponNo === item.sId ? styles['s-coupon-used-show'] : ''
         }`}
       >
         <p>已使用</p>
