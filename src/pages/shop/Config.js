@@ -1,11 +1,12 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom'
+import styles from './Config.module.scss'
 
 function Config(props) {
   const table = (
     <>
       <div className="d-flex justify-content-center">
-        <table className="table table-striped col-md-8 col-10 h6">
+        <table className={`${styles.table} col-md-8 col-10 h6`}>
           <thead></thead>
           <tbody>
             <tr>

@@ -139,6 +139,15 @@ function Product(props) {
     }
   }, [productId, myproduct, props.match.params.id])
 
+  useEffect(() => {
+    let start = 0
+    const timerId = setInterval(() => {
+      // console.log('123')
+      mainImgRef.current.src = lightBoxImgArray[start++ % 4]
+    }, 2500)
+    return () => clearInterval(timerId)
+  }, [lightBoxImgArray])
+
   return (
     <>
       <div>
