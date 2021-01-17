@@ -273,7 +273,10 @@ function Payment(props) {
               </label>
               <div className="col-sm-9 pl-2">
                 {/* <CreditCardInput checkCardNumber={checkCardNumber} /> */}
-                <div class="tpfield form-control mx-2" id="card-number"></div>
+                <div
+                  className="tpfield form-control mx-2"
+                  id="card-number"
+                ></div>
                 {/* <span
                   id="s-creditcard-alert"
                   style={{ fontSize: '12px', color: 'red' }}
@@ -287,7 +290,7 @@ function Payment(props) {
               </label>
               <div className="col-auto pl-2">
                 <div
-                  class="tpfield form-control mx-2"
+                  className="tpfield form-control mx-2"
                   id="card-expiration-date"
                 ></div>
               </div>
@@ -297,7 +300,7 @@ function Payment(props) {
                 安全碼
               </label>
               <div className="col-auto pl-2">
-                <div class="tpfield form-control mx-2" id="card-ccv"></div>
+                <div className="tpfield form-control mx-2" id="card-ccv"></div>
               </div>
             </div>
           </div>
