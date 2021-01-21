@@ -7,55 +7,49 @@ import Filterbar from '../../components/shop/Filterbar'
 import Pagination from '../../components/shop/Pagination'
 import FilterDisplay from '../../components/shop/FilterDisplay'
 import ProductListItem from '../../components/shop/ProductListItem'
+// sidebar
+import SidebarList from '../../components/shop/Sidebar/SidebarList'
 import '../../css/shop.scss'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 import { getAzenListfromStorage } from '../../actions/SazenActions'
 
 function ProductList(props) {
   const { isLogin } = useLoginStatus() //custom hook
-  const [myproduct, setMyproduct] = useState([])
+  const [productListArray, setProductListArray] = useState([])
   const [type, setType] = useState(0)
   const [totalpage, setTotalpage] = useState(0)
   const [currentpage, setCurrentpage] = useState(1)
-  const [vendor, setVendor] = useState('V000')
-  const [price, setPrice] = useState(9999)
-  const [orderBy, setOrderBy] = useState('itemId')
-
+  const [vendor, setVendor] = useState('')
+  const [price, setPrice] = useState('')
+  const [orderBy, setOrderBy] = useState('')
   // const searchParams = new URLSearchParams(props.location.search)
+  //sidebarList
+  const [sidebarListRWDshow, setSidebarListRWDshow] = useState(false)
 
+  const showSidebarListInRWD = () => {
+    setSidebarListRWDshow(!sidebarListRWDshow)
+  }
   useEffect(() => {
     //fetch database product撈所有資料(有分類)
     async function getClassifiedDataFromServer(page) {
-      let request = undefined
       try {
-        if (type !== 0 || vendor !== 'V000' || price !== 9999) {
-          request = new Request(
-            'http://localhost:6001/product/search/' +
-              type +
-              '/' +
-              vendor +
-              '/' +
-              price +
-              '/' +
-              orderBy +
-              '/' +
-              currentpage,
-            {
-              method: 'GET',
-              credentials: 'include',
-            }
-          )
-        } else {
-          request = new Request('http://localhost:6001/product/list/' + page, {
-            method: 'GET',
-            credentials: 'include',
+        if (type !== 0 || vendor !== '' || price !== '' || orderBy !== '') {
+          const response = await fetch('http://localhost:6001/product/search', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ type, vendor, price, orderBy, page }),
           })
+          const data = await response.json()
+          setProductListArray(data.rows)
+          setTotalpage(data.totalPages)
+        } else {
+          const response = await fetch(
+            `http://localhost:6001/product/list/${page}`
+          )
+          const data = await response.json()
+          setProductListArray(data.rows)
+          setTotalpage(data.totalPages)
         }
-        const response = await fetch(request)
-        const data = await response.json()
-
-        setMyproduct(data.rows)
-        setTotalpage(data.totalPages)
       } catch (error) {
         console.log(error)
       }
@@ -82,17 +76,15 @@ function ProductList(props) {
   const dispatch = useDispatch()
   useEffect(() => {
     //確認redux內有無按讚清單
-    if (isLogin) {
-      if (!reduxAzenStatus) {
-        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
-        dispatch(getAzenListfromStorage())
-      }
+    if (isLogin && !reduxAzenStatus) {
+      //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+      dispatch(getAzenListfromStorage())
     }
   }, [dispatch, isLogin, reduxAzenStatus])
   const main = (
     <>
       <div className="row">
-        {myproduct.map(value => (
+        {productListArray.map(value => (
           <ProductListItem key={value.itemId} value={value} isLogin={isLogin} />
         ))}
       </div>
@@ -103,8 +95,8 @@ function ProductList(props) {
     <>
       <Slider handletype={handletype} />
 
-      <div className="container">
-        <FilterDisplay
+      <div className="container-xl">
+        {/* <FilterDisplay
           type={type}
           vendor={vendor}
           price={price}
@@ -113,15 +105,31 @@ function ProductList(props) {
           setVendor={setVendor}
           setPrice={setPrice}
           setOrderBy={setOrderBy}
-        />
+        /> */}
         <Filterbar
-          setMyproduct={setMyproduct}
+          setMyproduct={setProductListArray}
           setTotalpage={setTotalpage}
           setVendor={setVendor}
           setPrice={setPrice}
           setOrderBy={setOrderBy}
+          sidebarListRWDshow={sidebarListRWDshow}
+          showSidebarListInRWD={showSidebarListInRWD}
         />
-        {main}
+        <div className="d-flex flex-wrap">
+          <div className="col-sm-3 col-12">
+            <SidebarList
+              vendor={vendor}
+              price={price}
+              orderBy={orderBy}
+              setPrice={setPrice}
+              setVendor={setVendor}
+              setOrderBy={setOrderBy}
+              showSidebarListInRWD={showSidebarListInRWD}
+              sidebarListRWDshow={sidebarListRWDshow}
+            />
+          </div>
+          <div className="col-sm-9 col-12">{main}</div>
+        </div>
         <Pagination
           totalpage={totalpage}
           currentpage={currentpage}

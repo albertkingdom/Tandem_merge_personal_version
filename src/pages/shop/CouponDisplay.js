@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
+import styles from './Coupon.module.scss'
 
-export default function CouponDisplay({ item, handleCouponSelect }) {
+export default function CouponDisplay({ item, handleCouponSelect, couponNo }) {
   const [isSelect, setIsSelect] = useState(false)
 
-  const selectclass = isSelect ? 's-coupon-used-show' : ''
   return (
     <div
-      className="position-relative"
+      className={`position-relative ${styles.coupon} `}
       data-discount={item.sMethod}
       onClick={() => {
         handleCouponSelect(item.sId, item.sMethod)
@@ -16,13 +16,14 @@ export default function CouponDisplay({ item, handleCouponSelect }) {
       <img
         src={`data:image/png;base64,${item.sCoupon}`}
         value={item.sId}
-        className="coupon img-fluid"
+        className="img-fluid"
         alt="..."
       />
 
       <div
-        className={`img-fluid s-coupon-used ${selectclass}`}
-        // onClick={() => handleCouponSelect2()}
+        className={`img-fluid ${styles['s-coupon-used']} ${
+          couponNo === item.sId ? styles['s-coupon-used-show'] : ''
+        }`}
       >
         <p>已使用</p>
       </div>

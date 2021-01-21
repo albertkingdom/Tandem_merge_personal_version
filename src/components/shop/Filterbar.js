@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import '../../css/shop.scss'
+import styles from './Filterbar.module.scss'
 import { AiOutlineSearch } from 'react-icons/ai' //search_icon
+import { FiFilter } from 'react-icons/fi'
 
 function Filterbar({
   setMyproduct,
@@ -9,6 +11,8 @@ function Filterbar({
   setVendor,
   setOrderBy,
   setPrice,
+  sidebarListRWDshow,
+  showSidebarListInRWD,
 }) {
   const [search_query, setSearch_query] = useState('')
   const inputRef = useRef()
@@ -46,21 +50,31 @@ function Filterbar({
   return (
     <>
       <div className="row d-flex justify-content-center my-2">
-        <div className="col col-sm-6 col-lg-2 s-filterbar">
+        <div className={`col-6 col-sm-6 col-lg-4 ${styles['s-filterbar']}`}>
           <input
             ref={inputRef}
             type="search"
-            className="form-control s-filterbar-search pl-4"
+            className={`form-control ${styles['s-filterbar-search']} pl-5`}
             aria-label="Text input with dropdown button"
+            placeholder="search"
             name="search"
             value={search_query}
             onChange={event => setSearch_query(event.target.value)}
           />
-          <Link className="s-searchicon" to="#">
+          <Link className={styles['s-searchicon']} to="#">
             <AiOutlineSearch style={{ fontSize: '24px', marginTop: '10px' }} />
           </Link>
         </div>
-        <div className="col col-sm-6 col-lg-2 s-filterbar">
+        <div className="col-6 text-right d-sm-none">
+          <button
+            onClick={showSidebarListInRWD}
+            className={styles.filterButton}
+          >
+            <FiFilter />
+            篩選
+          </button>
+        </div>
+        {/* <div className="col col-sm-6 col-lg-2 s-filterbar">
           <button
             className="btn btn-outline-secondary dropdown-toggle s-filterbar-btn"
             type="button"
@@ -164,7 +178,7 @@ function Filterbar({
               推出時間最新
             </option>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   )

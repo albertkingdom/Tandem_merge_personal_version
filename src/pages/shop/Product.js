@@ -13,9 +13,9 @@ import {
 import '../../css/shop.scss'
 import Swal from 'sweetalert2' //sweetalert2
 
-import Lightbox from 'react-image-lightbox' //lightbox
-import 'react-image-lightbox/style.css' //lightbox
-
+// import Lightbox from 'react-image-lightbox' //lightbox
+// import 'react-image-lightbox/style.css' //lightbox
+import LightboxForImage from '../../components/shop/LightboxForImage'
 import {
   updateAzenToLocalStorage,
   addAzenToDatabase,
@@ -36,25 +36,53 @@ function Product(props) {
   const [myproduct, setMyproduct] = useState([])
   const [configORcomment, setCofigORcomment] = useState(1) //1:建議配備, 2:留言板
   const [whoAzen, setWhoAzen] = useState('') //記錄此商品被那些mbId收藏，從商品database撈出的資料
-  const [photoIndex, setPhotoIndex] = useState(0) //lightbox
-  const [isOpen, setIsOpen] = useState(false) //lightbox
-  const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
 
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false) //lightbox
+  const [lightBoxImgArray, setLightBoxImgArray] = useState([]) //大圖路徑
+  const mainImgRef = useRef(null)
   const dispatch = useDispatch()
+  const handleOpenLightbox = value => {
+    setIsLightboxOpen(value)
+  }
   //user按讚相關
   const reduxAzenList = useSelector(state => state.SuserAzen.list)
   const reduxAzenStatus = useSelector(
     state => state.SuserAzen.isGetDataFromStorage
   )
+  const handleCancelAzen = productId => {
+    updateAzenToLocalStorage(productId)
+    dispatch(removeAzenIdFromRedux(productId))
+    cancelAzenToDatabase({
+      userId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
+      unlikeproductId: productId,
+    })
+  }
+  const handleAzen = productId => {
+    if (isLogin) {
+      addAzenToDatabase({
+        userId: JSON.parse(localStorage.getItem('LoginUserData')).mbId,
+        likeproductId: productId,
+      })
+      updateAzenToLocalStorage(productId)
 
+      dispatch(addAzenIdToRedux(productId))
+    } else {
+      Swal.fire('請先登入')
+    }
+  }
   let productId = props.match.params.id
+  //點商品小圖=>展示大圖
+  function clickTochangePic(event) {
+    let newAttr = event.target.getAttribute('src')
+    mainImgRef.current.src = newAttr
+  }
 
   useEffect(() => {
     //fetch database product撈所有資料(不分類)
     async function getDataFromServer() {
       try {
         const request = new Request(
-          'http://localhost:6001/product/' + productId,
+          `http://localhost:6001/product/${productId}`,
           {
             method: 'GET',
             credentials: 'include',
@@ -64,7 +92,7 @@ function Product(props) {
         const data = await response.json()
 
         setMyproduct(data.rows[0])
-        setWhoAzen(JSON.parse(data.rows[0].memberFavoriteId))
+        setWhoAzen(data.rows[0].memberFavoriteId)
       } catch (error) {
         console.log(error)
       }
@@ -76,84 +104,57 @@ function Product(props) {
 
   useEffect(() => {
     //確認redux內有無按讚清單
-    if (isLogin) {
-      if (!reduxAzenStatus) {
-        //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
-        dispatch(getAzenListfromStorage())
-      }
+    if (isLogin && !reduxAzenStatus) {
+      //if isGetDataFrom.. 是false，沒有從localstorage抓資料到redux
+      dispatch(getAzenListfromStorage())
     }
   }, [dispatch, isLogin, reduxAzenStatus])
-  //點商品小圖=>展示大圖
-  function clickTochangePic(e) {
-    // console.log('this is',e)
-    let newAttr = e.getAttribute('src')
-    // console.log(newAttr)
-    document.querySelector('.s-bigImg img').setAttribute('src', newAttr)
-    // e.style.border = '1px solid orange'
-    // console.log($(e))
-  }
 
   useEffect(() => {
     //處理小圖檔名，組合成大圖檔名
-    let bigImgarray = []
-    let oldname = String(myproduct.itemImg)
-    // oldname.toString()
-    let newname = oldname.split('.')
-    // console.log(newname[0])
-    for (let i = 0; i <= 3; i++) {
-      bigImgarray.push(`/images/shop/bigImage/` + newname[0] + '_' + i + `.jpg`)
-    }
 
-    setLightBoxImgArray(bigImgarray)
+    if (myproduct.itemImg) {
+      const bigImgarray = Array.from(Array(4).keys()).map(
+        item =>
+          `/images/shop/bigImage/${myproduct.itemImg.split('.')[0]}_${item}.jpg`
+      )
+      setLightBoxImgArray(bigImgarray)
+    }
   }, [myproduct])
 
   useEffect(() => {
     //儲存瀏覽歷程記錄至localstorage
     function addToHistory() {
+      const productId = props.match.params.id
       let currentHistory =
         JSON.parse(localStorage.getItem('browse-history')) || []
-      // console.log('product id', typeof +productId)
+      const uniqueId = [...new Set(currentHistory.map(item => item.itemId))]
 
-      //沒有在history裡就加入
-      if (
-        currentHistory.filter(item => item.itemId === +productId).length === 0
-      ) {
-        // const newHistory = [...currentHistory, myproduct]
-        currentHistory.push(myproduct)
+      !uniqueId.includes(+productId) && currentHistory.push(myproduct)
 
-        localStorage.setItem('browse-history', JSON.stringify(currentHistory))
-      }
+      localStorage.setItem('browse-history', JSON.stringify(currentHistory))
     }
     if (myproduct.length !== 0) {
       addToHistory()
     }
-  }, [productId, myproduct])
+  }, [productId, myproduct, props.match.params.id])
+
+  useEffect(() => {
+    let start = 0
+    const timerId = setInterval(() => {
+      // console.log('123')
+      mainImgRef.current.src = lightBoxImgArray[start++ % 4]
+    }, 2500)
+    return () => clearInterval(timerId)
+  }, [lightBoxImgArray])
 
   return (
     <>
       <div>
-        {isOpen && (
-          <Lightbox
-            mainSrc={lightBoxImgArray[photoIndex]}
-            nextSrc={
-              lightBoxImgArray[(photoIndex + 1) % lightBoxImgArray.length]
-            }
-            prevSrc={
-              lightBoxImgArray[
-                (photoIndex + lightBoxImgArray.length - 1) %
-                  lightBoxImgArray.length
-              ]
-            }
-            onCloseRequest={() => setIsOpen(false)}
-            onMovePrevRequest={() =>
-              setPhotoIndex(
-                (photoIndex + lightBoxImgArray.length - 1) %
-                  lightBoxImgArray.length
-              )
-            }
-            onMoveNextRequest={() =>
-              setPhotoIndex((photoIndex + 1) % lightBoxImgArray.length)
-            }
+        {isLightboxOpen && (
+          <LightboxForImage
+            lightBoxImgArray={lightBoxImgArray}
+            handleOpenLightbox={handleOpenLightbox}
           />
         )}
       </div>
@@ -167,6 +168,7 @@ function Product(props) {
               className="img-fluid"
               src={`/images/shop/small_Img/${myproduct.itemImg}`}
               alt=""
+              ref={mainImgRef}
             />
             <button
               type="button"
@@ -176,7 +178,7 @@ function Product(props) {
                 backgroundColor: 'transparent',
                 border: '0px',
               }}
-              onClick={() => setIsOpen(true)}
+              onClick={() => setIsLightboxOpen(true)}
             >
               <AiOutlineArrowsAlt
                 style={{ color: 'white', fontSize: '24px' }}
@@ -188,7 +190,7 @@ function Product(props) {
               return (
                 <li
                   key={index}
-                  onClick={e => clickTochangePic(e.target)}
+                  onClick={clickTochangePic}
                   style={{ margin: '5px' }}
                 >
                   <img className="img-fluid mx-1" src={img} alt="" />
@@ -206,23 +208,11 @@ function Product(props) {
           <h3>{myproduct.itemName}</h3>
           <p style={{ minHeight: '150px' }}>{myproduct.itemIntro}</p>
           <div className="row">
-            {reduxAzenList.indexOf(`${myproduct.itemId}`) === -1 ? (
+            {!reduxAzenList.includes(`${myproduct.itemId}`) ? (
               <button
                 type="button"
                 className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
-                onClick={() => {
-                  if (isLogin) {
-                    addAzenToDatabase({
-                      userId: JSON.parse(localStorage.getItem('LoginUserData'))
-                        .mbId,
-                      likeproductId: myproduct.itemId,
-                    })
-                    updateAzenToLocalStorage(myproduct.itemId)
-                    dispatch(addAzenIdToRedux(myproduct.itemId))
-                  } else {
-                    Swal.fire('請先登入!')
-                  }
-                }}
+                onClick={() => handleAzen(myproduct.itemId)}
               >
                 <AiOutlineHeart
                   style={{ color: '#F9A451', fontSize: '24px' }}
@@ -234,16 +224,7 @@ function Product(props) {
                 type="button"
                 className="btn btn-outline-info mx-2 s-btn-common col-5 col-md-4"
                 style={{ backgroundColor: '#79cee2', color: 'white' }}
-                onClick={() => {
-                  updateAzenToLocalStorage(myproduct.itemId)
-                  cancelAzenToDatabase({
-                    userId: JSON.parse(localStorage.getItem('LoginUserData'))
-                      .mbId,
-                    unlikeproductId: myproduct.itemId,
-                  })
-
-                  dispatch(removeAzenIdFromRedux(myproduct.itemId))
-                }}
+                onClick={() => handleCancelAzen(myproduct.itemId)}
               >
                 <AiFillHeart style={{ color: '#F9A451', fontSize: '24px' }} />
                 已加入收藏
@@ -287,10 +268,9 @@ function Product(props) {
       <ul className="nav justify-content-center">
         <li className="nav-item">
           <button
-            className={[
-              'section-select',
-              configORcomment === 1 ? 'active' : '',
-            ].join(' ')}
+            className={`section-select ${
+              configORcomment === 1 ? 'active' : ''
+            }`}
             onClick={() => {
               setCofigORcomment(1)
             }}
@@ -300,10 +280,9 @@ function Product(props) {
         </li>
         <li className="nav-item">
           <button
-            className={[
-              'section-select',
-              configORcomment === 2 ? 'active' : '',
-            ].join(' ')}
+            className={`section-select ${
+              configORcomment === 2 ? 'active' : ''
+            }`}
             onClick={() => {
               setCofigORcomment(2)
             }}
@@ -316,7 +295,7 @@ function Product(props) {
         {configORcomment === 1 ? (
           <Config />
         ) : (
-          <CommentList props={myproduct} productId={productId} />
+          <CommentList productId={productId} />
         )}
       </div>
       <div className="container">

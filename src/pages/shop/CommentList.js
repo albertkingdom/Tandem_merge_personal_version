@@ -9,13 +9,10 @@ import Swal from 'sweetalert2' //sweetalert2
 import NewCommentContent from '../../components/shop/NewCommentContent'
 import OldCommentContent from '../../components/shop/OldCommentContent'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
+
 function CommentList(props) {
-  // console.log(props.leaveComment)
   const { isLogin } = useLoginStatus() //custom hook
 
-  //發表留言
-  // const [commentContent, setCommentContent] = useState('')
-  // const [rating, setRating] = useState(0)
   const [oldCommentContent, setOldCommentContent] = useState([])
 
   const dispatch = useDispatch() //使用useDispatch hook
@@ -55,21 +52,11 @@ function CommentList(props) {
   //抓舊留言的function, set到OldCommentContent
   async function getOldCommentAsync(productId) {
     try {
-      const request = new Request(
-        // 'http://localhost:5555/comments/?itemId='+productId,
-        'http://localhost:6001/product/comment/' + productId,
-        {
-          method: 'GET',
-
-          headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          }),
-        }
+      const response = await fetch(
+        `http://localhost:6001/product/comment/${productId}`
       )
-      const response = await fetch(request)
       const data = await response.json()
-      // console.log('res data', data)
+
       setOldCommentContent(data.result)
     } catch (error) {
       console.log(error)
@@ -81,9 +68,9 @@ function CommentList(props) {
   }, [productId])
 
   //刪除留言功能
-  function handleDelMsg(msgID) {
+  async function handleDelMsg(msgID) {
     // console.log(msgID)
-    Swal.fire({
+    const confirm = await Swal.fire({
       title: '確定要刪除此留言?',
       text: "You won't be able to revert this!",
       icon: 'warning',
@@ -91,66 +78,68 @@ function CommentList(props) {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
-    }).then(result => {
-      //選confirm就做fetch
-      if (result.value) {
-        fetch('http://localhost:6001/product/delcomment/' + msgID, {
-          method: 'POST',
-          headers: new Headers({
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            // console.log(data)
-            if (data.result.affectedRows === 1) {
-              Swal.fire('成功刪除!').then(result => {
-                getOldCommentAsync(productId)
-              })
-            }
-          })
-          .catch(error => console.log(error))
-      }
     })
+
+    if (confirm.value) {
+      try {
+        const response = await fetch(
+          `http://localhost:6001/product/delcomment/${msgID}`,
+          {
+            method: 'POST',
+            headers: new Headers({
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            }),
+          }
+        )
+
+        const data = await response.json()
+        if (data.result.affectedRows === 1) {
+          await Swal.fire('成功刪除!')
+          getOldCommentAsync(productId) //???????
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   // 用sweetalert編輯留言
   async function handleEditMsg(msgID) {
-    let comment = oldCommentContent.filter((msg, index) => msg.id === msgID)
+    let comment = oldCommentContent.filter(msg => msg.id === msgID)
     // console.log(comment[0].content)
     const { value: text } = await Swal.fire({
       input: 'textarea',
       inputPlaceholder: 'Type your message here...',
       inputValue: comment[0].content,
-
       inputAttributes: {
         'aria-label': 'Type your message here',
       },
       showCancelButton: true,
     })
     if (text) {
-      // Swal.fire(text)
-      const userCommentContentUpdate = {
-        content: text,
-      }
-      fetch('http://localhost:6001/product/editcomment/' + msgID, {
-        method: 'POST',
-        body: JSON.stringify(userCommentContentUpdate),
-        headers: new Headers({
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log(data)
-          if (data.result.affectedRows === 1) {
-            //成功編輯留言後重抓留言
-            getOldCommentAsync(productId)
+      try {
+        const userCommentContentUpdate = {
+          content: text,
+        }
+        const response = await fetch(
+          `http://localhost:6001/product/editcomment/${msgID}`,
+          {
+            method: 'POST',
+            body: JSON.stringify(userCommentContentUpdate),
+            headers: new Headers({
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            }),
           }
-        })
-        .catch(error => console.log(error))
+        )
+        const data = await response.json()
+        if (data.result.affectedRows === 1) {
+          getOldCommentAsync(productId) //???????
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 

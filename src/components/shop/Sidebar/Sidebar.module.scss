@@ -1,0 +1,66 @@
+.SidebarList {
+  height: fit-content;
+  transition: height 0.5s;
+  padding: 15px 0px;
+}
+.Sidebar {
+  border-bottom: 1px solid lightgray;
+  margin-bottom: 10px;
+  ul {
+    list-style: none;
+
+    li {
+      text-align: left;
+      margin: 10px 0px;
+      input[type='checkbox'] {
+        margin: 0px 10px 0px 0px;
+      }
+      input[type='checkbox'].hidden {
+        width: 0px;
+        height: 0px;
+      }
+      span.checkbox {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 1px solid gray;
+      }
+    }
+  }
+  i {
+    color: black;
+  }
+}
+.Sidebar.closed {
+  height: 30px;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 576px) {
+  .SidebarList {
+    height: 0px;
+    padding: 0px;
+    overflow: hidden;
+  }
+  .SidebarList.RWDshow {
+    height: 100%;
+  }
+}
+.title {
+  text-align: left;
+
+  font-size: 16px;
+  font-weight: 700;
+  span {
+    float: right;
+  }
+}
+.finishButton {
+  background-color: #79cee2;
+  border-radius: 15px;
+  width: 60px;
+  height: 30px;
+  color: #fff;
+  position: relative;
+  left: calc(50% - 30px);
+}

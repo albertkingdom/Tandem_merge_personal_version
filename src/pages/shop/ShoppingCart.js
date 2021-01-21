@@ -12,16 +12,16 @@ import ShoppingCartItem from '../../components/shop/ShoppingCartItem'
 import useLoginStatus from '../../components/shop/customHook/useLoginStatus'
 //action creator
 import { getAzenListfromStorage } from '../../actions/SazenActions'
+import ButtonOrHistory from '../../components/shop/Button/CouponOrHistory'
+import styles from './ShoppingCart.module.scss'
 
 function ShoppingCart(props) {
   const { isLogin } = useLoginStatus() //custom hook
   const [mycartDisplay, setMycartDisplay] = useState([])
-
-  const [isSelectCoupon, setIsSelectCoupon] = useState(false)
   const [totalMoney, setTotalMoney] = useState(0) //總金額
-  const [coupon, setCoupon] = useState([]) //coupon資訊
-  const [couponNo, setCouponNo] = useState('')
-  const [discount, setDiscount] = useState(0) //折扣多少錢
+  const [coupon, setCoupon] = useState([]) //買家擁有的所有coupon資訊
+  const [couponNo, setCouponNo] = useState('') //選擇使用的折價券
+  const [discount, setDiscount] = useState('0') //折扣方式
   const [browsehistory, setBrowseHistory] = useState([]) //瀏覽紀錄相關資訊
   const [couponOrhistory, setCouponOrHistory] = useState(0) //顯示折價券or瀏覽紀錄
   //redux
@@ -53,44 +53,46 @@ function ShoppingCart(props) {
     const updateCart = newCart.filter(item => item.id !== value.id)
 
     localStorage.setItem('cart', JSON.stringify(updateCart))
-    //設定資料
-    // setMycart(updateCart)
+
     setMycartDisplay(updateCart)
   }
-  const handleCouponSelect = (couponNo, discount) => {
-    // console.log('element', element)
-    setIsSelectCoupon(prev => !prev)
-
-    setDiscount(discount)
-    // console.log(element.getAttribute('value'))
-    setCouponNo(couponNo)
-  }
-  //取消使用折價券
-  const cancelCouponSelect = () => {
-    setIsSelectCoupon(false)
-    setDiscount(0)
-  }
-  const sum = items => {
-    let total = 0
-    for (let i = 0; i < items.length; i++) {
-      total += items[i].amount * items[i].price
+  const handleCouponSelect = (No, method) => {
+    if (couponNo === No) {
+      setCouponNo('')
+      setDiscount('0')
+    } else {
+      setCouponNo(No)
+      setDiscount(method)
     }
-    return total
   }
 
+  const sum = items => {
+    const totalprice = items.map(item => item.price).reduce((a, b) => a + b, 0)
+    return totalprice
+  }
+
+  const goNextStep = () => {
+    if (!isLogin) {
+      Swal.fire('請先登入')
+      return
+    }
+    if (mycartDisplay.length === 0) {
+      Swal.fire('請加入商品至購物車')
+      return
+    }
+
+    props.history.push('/payment')
+  }
   useEffect(() => {
     //計算價錢
 
     let money
-    if (isSelectCoupon && couponNo === 'S001') {
-      money = sum(mycartDisplay) - discount
-    } else if (isSelectCoupon && couponNo === 'S002') {
+
+    if (discount.includes('%')) {
       money = (sum(mycartDisplay) * parseFloat(discount)) / 100
     } else {
-      money = sum(mycartDisplay)
+      money = sum(mycartDisplay) - discount
     }
-    // let money = sum(mycartDisplay)-coupon.sMethod
-
     setTotalMoney(money)
 
     //總價set進Localstorage裡，key='total'
@@ -99,7 +101,7 @@ function ShoppingCart(props) {
     }
 
     SaveTotalToLocalStorage(money)
-  }, [mycartDisplay, coupon, isSelectCoupon, couponNo, discount])
+  }, [mycartDisplay, coupon, couponNo, discount])
 
   //抓coupon圖片和資訊
   async function getCoupon() {
@@ -137,9 +139,13 @@ function ShoppingCart(props) {
   useEffect(() => {
     //抓瀏覽紀錄相關資訊
     function gethistoryfromlocalstorage() {
-      let history = JSON.parse(localStorage.getItem('browse-history'))
-
-      setBrowseHistory(history)
+      let history = JSON.parse(localStorage.getItem('browse-history')) || []
+      //過濾掉重複
+      const unique = []
+      const uniqueId = [...new Set(history.map(item => item.itemId))] //[1,2,3]
+      uniqueId.map(id => unique.push(history.find(item => item.itemId === id)))
+      // console.log('unique', unique)
+      setBrowseHistory(unique)
     }
     gethistoryfromlocalstorage()
   }, [])
@@ -148,14 +154,12 @@ function ShoppingCart(props) {
     <>
       <PayProgressbar />
 
-      <div className="d-flex">
-        <div className="s-shoppingList col col-8">
+      <div className="">
+        <div className={styles['s-shoppingList']}>
           <table className="table">
             <thead>
               <tr>
-                <th scope="col" className="s-columnWidth1 h6">
-                  商品名稱
-                </th>
+                <th className="s-columnWidth1 h6">商品名稱</th>
                 <th scope="col" className="h6">
                   單價
                 </th>
@@ -186,85 +190,21 @@ function ShoppingCart(props) {
               )}
             </tbody>
           </table>
-          <table className="s-totalprice" style={{ width: '100%' }}>
-            <tbody>
-              <tr className="">
-                <td
-                  className="text-right pr-2"
-                  style={{ width: '75%', fontSize: '20px' }}
-                >
-                  購買總金額(共{mycartDisplay.length}個商品):
-                </td>
-                <td>
-                  <span
-                    className=""
-                    style={{ color: 'orange', fontSize: '30px' }}
-                  >
-                    ${sum(mycartDisplay)}
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td
-                  className="text-right pr-2"
-                  style={{ width: '75%', fontSize: '20px' }}
-                >
-                  折扣後:
-                </td>
-                <td>
-                  <div className="p">
-                    <span
-                      className=""
-                      style={{ color: 'orange', fontSize: '30px' }}
-                    >
-                      $
-                      {isSelectCoupon
-                        ? couponNo === 'S001'
-                          ? sum(mycartDisplay) - discount
-                          : sum(mycartDisplay) * (parseFloat(discount) / 100)
-                        : sum(mycartDisplay)}
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </div>
 
         <div
           className=""
           style={{ margin: '20px 0px 0px', position: 'relative' }}
         >
-          <div
-            className="col-12 d-flex justify-content-center"
-            style={{ width: '300px', height: '40px' }}
-          >
-            <button
-              className="col-5"
-              style={{ border: '0px', height: '35px' }}
-              onClick={() => {
-                setCouponOrHistory(0)
-              }}
-            >
-              折價券
-            </button>
-            <button
-              className="col-5"
-              style={{ border: '0px', height: '35px' }}
-              onClick={() => {
-                setCouponOrHistory(1)
-              }}
-            >
-              瀏覽紀錄
-            </button>
-          </div>
+          <ButtonOrHistory
+            setCouponOrHistory={setCouponOrHistory}
+            couponOrhistory={couponOrhistory}
+          />
           {couponOrhistory === 0 ? (
             <CouponDisplayList
               coupon={coupon}
-              isSelectCoupon={isSelectCoupon}
               couponNo={couponNo}
               handleCouponSelect={handleCouponSelect}
-              cancelCouponSelect={cancelCouponSelect}
             />
           ) : (
             <HistoryDisplay
@@ -275,6 +215,18 @@ function ShoppingCart(props) {
         </div>
       </div>
 
+      <div className="mt-2">
+        <p>
+          <span className="d-inline-block col-6 text-right">
+            購買總金額(共{mycartDisplay.length}個商品):
+          </span>
+          <span className={styles.money}>${sum(mycartDisplay)}</span>
+        </p>
+        <p>
+          <span className="d-inline-block col-6 text-right">折扣後:</span>
+          <span className={styles.money}>${totalMoney}</span>
+        </p>
+      </div>
       <div className="d-flex justify-content-center my-3">
         <Link
           type="button"
@@ -289,9 +241,7 @@ function ShoppingCart(props) {
           className="btn btn-outline-info mx-2 s-btn-common"
           style={{ fontWeight: '400' }}
           to="#"
-          onClick={() => {
-            !isLogin ? Swal.fire('請先登入') : props.history.push('/payment')
-          }}
+          onClick={goNextStep}
         >
           下一步，填付款資訊
         </Link>

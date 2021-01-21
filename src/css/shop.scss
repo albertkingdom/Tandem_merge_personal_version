@@ -1,4 +1,5 @@
 //整體共用
+$orange-color:#f9a451;
 p,
 .p {
   font-size: 16px;
@@ -131,7 +132,7 @@ h6 {
 .s-shoppingList {
   // width: 80%;
   // border: 1px solid lightblue;
-  margin: 20px;
+  // margin: 20px;
 
   thead {
     background-color: #458dcc;
@@ -166,37 +167,7 @@ h6 {
   box-shadow: 2px 2px gray;
   border-radius: 15px;
 }
-.s-coupon-used {
-  background-color: gray;
-  position: absolute;
 
-  top: 0;
-  left: 0;
-  width: 240px;
-
-  height: 100%;
-  opacity: 0.5;
-  font-size: 36px;
-  text-align: center;
-  color: white;
-  line-height: 100%;
-
-  display: none;
-  p {
-    top: 50%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    font-size: 28px;
-  }
-}
-.s-coupon-used-show {
-  @extend .s-coupon-used;
-  // max-height: 160px;
-  // z-index: 99;
-  // visibility: visible;
-  display: block;
-}
 .post {
   /* width: 70%; */
   height: 150px;
@@ -324,8 +295,8 @@ h6 {
   width: 200px;
   // height: 50px;
   font-size: 16px;
-  color: #f9a451;
-  border: 1px solid #f9a451;
+  color: $orange-color;
+  border: 1px solid $orange-color;
   text-align: center;
   background-color: white;
   button {
@@ -335,7 +306,7 @@ h6 {
     // border-radius: 50%;
     border: none;
     background-color: transparent;
-    color: #f9a451;
+    color: $orange-color;
   }
 }
 //頁數element

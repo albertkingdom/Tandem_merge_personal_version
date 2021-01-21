@@ -1,0 +1,64 @@
+//Filterbar
+$orange-color: #f9a451;
+
+.s-filterbar {
+  height: 45px;
+  option {
+    cursor: pointer;
+  }
+}
+.s-filterbar-btn {
+  border-radius: 25px;
+  border: 1px solid #79cee2;
+  color: #79cee2;
+  width: 100%;
+  &:hover {
+    background-color: #79cee2;
+    border: 1px solid #79cee2;
+  }
+  &:active {
+    background-color: #79cee2;
+  }
+}
+.s-filterbar-search {
+  @extend .s-filterbar-btn;
+  // margin-top: 7px;
+  &:hover {
+    background-color: white;
+  }
+}
+.s-filterClearBtn {
+  margin: 5px;
+  width: 200px;
+  // height: 50px;
+  font-size: 16px;
+  color: $orange-color;
+  border: 1px solid $orange-color;
+  text-align: center;
+  background-color: white;
+  button {
+    margin: 8px;
+    // height: 25px;
+    // width: 25px;
+    // border-radius: 50%;
+    border: none;
+    background-color: transparent;
+    color: $orange-color;
+  }
+}
+
+.s-searchicon {
+  position: relative;
+  bottom: 40px;
+  left: 5px;
+}
+
+.filterButton {
+  height: 35px;
+  font-size: 20px;
+}
+@media screen and (min-width: 576px) {
+  .filterButton {
+    display: none;
+  }
+}

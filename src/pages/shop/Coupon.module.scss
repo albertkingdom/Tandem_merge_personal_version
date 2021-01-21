@@ -1,0 +1,35 @@
+.coupon{
+    width: 200px;
+    height: 200px;
+}
+.s-coupon-used {
+    background-color: gray;
+    position: absolute;
+  
+    top: 0;
+    left: 0;
+    width: 240px;
+  
+    height: 100%;
+    opacity: 0.5;
+    font-size: 36px;
+    text-align: center;
+    color: white;
+    line-height: 100%;
+  
+    display: none;
+    p {
+      top: 50%;
+      left: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+    }
+  }
+  .s-coupon-used-show {
+    @extend .s-coupon-used;
+    // max-height: 160px;
+    // z-index: 99;
+    // visibility: visible;
+    display: block;
+  }

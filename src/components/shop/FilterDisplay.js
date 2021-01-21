@@ -120,20 +120,20 @@ const FilterDisplay = ({
         ) : (
           ''
         )}
-        {vendor !== 'V000' ? (
+        {vendor !== '' ? (
           <div className="s-filterClearBtn">
             發行商:{vendordisplay}
-            <button onClick={() => setVendor('V000')}>
+            <button onClick={() => setVendor('')}>
               <AiOutlineCloseCircle />
             </button>
           </div>
         ) : (
           ''
         )}
-        {price !== 9999 ? (
+        {price !== '' ? (
           <div className="s-filterClearBtn">
             價格:{pricedisplay}
-            <button onClick={() => setPrice(9999)}>
+            <button onClick={() => setPrice('')}>
               <AiOutlineCloseCircle />
             </button>
           </div>

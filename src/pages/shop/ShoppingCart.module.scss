@@ -1,0 +1,26 @@
+.money {
+  color: orange;
+  font-size: 30px;
+}
+.s-shoppingList {
+  // width: 80%;
+  // border: 1px solid lightblue;
+  // margin: 20px;
+
+  thead {
+    background-color: #458dcc;
+    color: white;
+    margin-bottom: 30px;
+  }
+  tbody {
+    border: 1px solid #adb6bd;
+  }
+}
+.s-couponList {
+  @extend .s-shoppingList;
+
+  position: relative;
+  top: 10px;
+  box-shadow: 0px 0px 10px #adb6bd;
+  border: 1px solid #adb6bd;
+}
