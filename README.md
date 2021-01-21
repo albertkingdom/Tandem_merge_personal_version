@@ -5,7 +5,7 @@
 - 收藏商品功能
 - 加入購物車
 
-![productlist](https://imgur.com/XgENhti.jpg)
+![productlist](https://imgur.com/HUQUI8N.png)
 
 ## 商品頁
 
@@ -14,7 +14,7 @@
 - 回覆他人留言功能
 - 編輯、刪除個人留言
 
-![productpage](https://imgur.com/mlQ70V5.jpg)
+![productpage](https://imgur.com/KTWDuYh.png)
 
 ## 購物車
 
