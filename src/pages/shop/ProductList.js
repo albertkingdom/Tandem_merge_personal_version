@@ -21,7 +21,7 @@ function ProductList(props) {
   const [currentpage, setCurrentpage] = useState(1)
   const [vendor, setVendor] = useState('')
   const [price, setPrice] = useState('')
-  const [orderBy, setOrderBy] = useState('itemId')
+  const [orderBy, setOrderBy] = useState('')
   // const searchParams = new URLSearchParams(props.location.search)
   //sidebarList
   const [sidebarListRWDshow, setSidebarListRWDshow] = useState(false)
@@ -33,12 +33,7 @@ function ProductList(props) {
     //fetch database product撈所有資料(有分類)
     async function getClassifiedDataFromServer(page) {
       try {
-        if (
-          type !== 0 ||
-          vendor !== '' ||
-          price !== '' ||
-          orderBy !== 'itemId'
-        ) {
+        if (type !== 0 || vendor !== '' || price !== '' || orderBy !== '') {
           const response = await fetch('http://localhost:6001/product/search', {
             method: 'post',
             headers: { 'content-type': 'application/json' },
