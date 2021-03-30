@@ -13,3 +13,8 @@ export const getAzenListfromStorage = 'GET_AZEN_FROM_STORAGE'
 export const addAzenId = 'ADD_AZEN_ID'
 
 export const removeAzenId = 'REMOVE_AZEN_ID'
+
+// coupon
+export const addCoupon = 'ADD_COUPON'
+
+export const removeCoupon = 'REMOVE_COUPON'

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { withRouter, Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import '../../css/shop.scss'
 import Swal from 'sweetalert2' //sweetalert2
 import { Form } from 'react-bootstrap'
@@ -23,6 +23,8 @@ function Payment(props) {
   const mbId = JSON.parse(localStorage.getItem('LoginUserData')).mbId
   const username = JSON.parse(localStorage.getItem('LoginUserData')).mbName
   const dispatch = useDispatch()
+  const couponStatus = useSelector(state => state.Scart.discount)
+
   const checkCardNumber = () => {
     setCardNumberValidation(true)
   }
@@ -67,7 +69,8 @@ function Payment(props) {
       const body = {
         username: username,
         itemIds: JSON.stringify(productId),
-        totalPrice: localStorage.getItem('total'),
+        // totalPrice: localStorage.getItem('total'),
+        discount: couponStatus,
         mbId: mbId,
         prime: prime,
       }

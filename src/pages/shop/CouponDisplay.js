@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import styles from './Coupon.module.scss'
+import { addCoupon, removeCoupon } from '../../actions/ScouponActions'
 
 export default function CouponDisplay({ item, handleCouponSelect, couponNo }) {
   const [isSelect, setIsSelect] = useState(false)
-
+  const dispatch = useDispatch()
+  const couponStatus = useSelector(state => state.Scart.discount)
   return (
     <div
       className={`position-relative ${styles.coupon} `}
@@ -11,6 +14,9 @@ export default function CouponDisplay({ item, handleCouponSelect, couponNo }) {
       onClick={() => {
         handleCouponSelect(item.sId, item.sMethod)
         setIsSelect(prev => !prev)
+        couponStatus === ''
+          ? dispatch(addCoupon(item.sMethod))
+          : dispatch(removeCoupon())
       }}
     >
       <img

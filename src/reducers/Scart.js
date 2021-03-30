@@ -1,7 +1,12 @@
 import * as actionTypes from '../actions/SactionTypes'
 
 //isUpdateFromLocal: 如果localStorage有cart，是否取得localStorage的資料
-const initialState = { isUpdateFromLocal: false, count: 0, list: [] }
+const initialState = {
+  isUpdateFromLocal: false,
+  count: 0,
+  list: [],
+  discount: '',
+}
 
 const cartCount = (state = initialState, action) => {
   switch (action.type) {
@@ -24,6 +29,16 @@ const cartCount = (state = initialState, action) => {
         isUpdateFromLocal: true,
         count: action.payload.length,
         list: [...action.payload.list],
+      }
+    case actionTypes.addCoupon:
+      return {
+        ...state,
+        discount: action.payload.discount,
+      }
+    case actionTypes.removeCoupon:
+      return {
+        ...state,
+        discount: '',
       }
     default:
       return state

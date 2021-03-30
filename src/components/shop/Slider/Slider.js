@@ -28,6 +28,7 @@ function Slider({ handletype }) {
               backgroundSelect === item ? `${styles.active}` : ''
             }`}
             style={{ backgroundImage: `url('${background_list[item]}')` }}
+            key={item}
           ></div>
         ))}
 
