@@ -26,6 +26,7 @@ const cartCount = (state = initialState, action) => {
       return initialState
     case actionTypes.getCartFromStorage:
       return {
+        ...state,
         isUpdateFromLocal: true,
         count: action.payload.length,
         list: [...action.payload.list],
